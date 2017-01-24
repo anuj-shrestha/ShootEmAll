@@ -13,10 +13,11 @@ var GameUI = (function() {
 		var that = this;
 
 		this.setWidth = function(width) {
+			console.log('width set', width);
 			canvas.width = width;
 		}
 
-		this.setWidth = function(height) {
+		this.setHeight = function(height) {
 			canvas.height = height;
 		}
 
@@ -31,6 +32,9 @@ var GameUI = (function() {
 		this.getCanvas = function() {
 			return canvas;
 		}
+		this.getContext = function() {
+			return ctx;
+		}
 
 		this.show = function() {
 			canvas.style.display = 'block';
@@ -42,6 +46,10 @@ var GameUI = (function() {
 
 		this.clear = function(x, y, width, height) {
 			ctx.clearRect(x, y, width, height);
+		}
+
+		this.translate = function(x, y) {
+			ctx.translate(x, y);
 		}
 
 		this.scrollWindow = function(x, y) {
@@ -63,13 +71,13 @@ var GameUI = (function() {
 			ctx.fillStyle = 'white';
 			ctx.fillText(text, x, y);
 		}
-		this.drawDottedPath = function() {
+		this.drawDottedPath = function(x, y, mx, my) {
 			ctx.beginPath(); 
 	    ctx.lineWidth="1";
 	    ctx.strokeStyle="green"; // Green path
 	    ctx.setLineDash([5, 15]);
-	    ctx.moveTo(that.player.gunPointX, that.player.gunPointY);
-	    ctx.lineTo(mouse.x,  mouse.y);
+	    ctx.moveTo(x, y);
+	    ctx.lineTo(mx, my);
 	    ctx.stroke(); // Draw it
 		}
 
@@ -86,3 +94,5 @@ var GameUI = (function() {
  	}
 
 })();
+
+// window.GameUI = GameUI;
