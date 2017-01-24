@@ -71,9 +71,10 @@ var GameUI = (function() {
 			ctx.fillStyle = 'white';
 			ctx.fillText(text, x, y);
 		}
+		
 		this.drawDottedPath = function(x, y, mx, my) {
 			ctx.beginPath(); 
-	    ctx.lineWidth="1";
+	    ctx.lineWidth="0.35";
 	    ctx.strokeStyle="green"; // Green path
 	    ctx.setLineDash([5, 15]);
 	    ctx.moveTo(x, y);

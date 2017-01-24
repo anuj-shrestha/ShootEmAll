@@ -15,13 +15,16 @@ function Enemy() {
 	
 	this.type;
 	this.state;
+	this.health = 100;
 
 	this.sX = 0;
 	this.sY = 144;
-	this.width = 48;
-	this.height = 48;
+	this.sWidth = 48;
+	this.width = 96;
+	this.height = 96;
 
 	this.frame = 0;
+	this.rotation;
 
 	var that = this;
 
@@ -41,38 +44,23 @@ function Enemy() {
 		}
 
 		// console.log('Enemy', rotation);
-		that.sX = that.width * that.frame;
+		that.sX = that.sWidth * that.frame;
 		// ctx.drawImage(element, that.sX, that.sY, that.width, that.height, that.x, that.y, that.width, that.height);
 
 		ctx.save();
 		ctx.translate(that.x + that.width/2, that.y + that.height/2);
 		// console.log('Enemypostion', that.x, that.y);
 		ctx.rotate(rotation);
-		ctx.drawImage(element, that.sX, that.sY, that.width, that.height, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-		ctx.restore();
-
-
-		// gameUI.draw(element, that.sX, that.sY, that.width, that.height, that.x, that.y, that.width, that.height);
-
-
-		// ctx.save();
-		// 	// console.log(this.x, this.y);
-
-	 //    ctx.translate(that.x + that.width/2, that.y + that.height/2);
-
-	 //    ctx.rotate(rotation);
-	 
-		// ctx.drawImage(element, that.sX, that.sY, that.width, that.height, that.x, that.y, that.width, that.height);
-
-	 //    ctx.restore();
-
-		
+		ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sWidth, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		if (that.sX === 96 && this.velX === 0.5){
+			ctx.drawImage(element, that.sX, that.sY + 48, that.sWidth, that.sWidth, that.width/2 * -1, that.height/2, that.width, that.height);
+		}
+		ctx.restore();		
 
 	}
 	
 	this.update = function(playerX, playerY) {
-		that.velX = 1;
-		that.velY = 1;
+
 		var destinationX = playerX - that.x + 0.1;
 		var destinationY = playerY - that.y + -0.1;
 		
@@ -80,8 +68,8 @@ function Enemy() {
 		var yIncrement = destinationY/Math.abs(destinationY);
 		// console.log('enmy destination', destinationX, destinationY);
 
-		that.x += xIncrement;
-		that.y += yIncrement;
+		that.x += xIncrement * that.velX;
+		that.y += yIncrement * that.velY;
 
 		that.x = Math.max(Math.min(that.x, gameUI.getWidth() - that.width), 0);
 		that.y = Math.max(Math.min(that.y, gameUI.getHeight() - that.height), 0);

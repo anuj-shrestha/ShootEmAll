@@ -1,55 +1,65 @@
 function Bullet() {
+	
 	var gameUI = GameUI.getInstance();
 	var ctx = gameUI.getContext();
+
 	var element = new Image();
-	element.src = 'images/shooter-sprite.png';
+	element.src = 'images/spaceship-game-2.png';
 
 	this.x;
 	this.y;
-	this.velX;
-	this.velY;
+	this.velX = 5;
+	this.velY = 5;
 
 	this.sX = 0;
 	this.sY = 96;
 	this.width = 24;
 	this.height = 24;
+	this.frame = 0;
+
+	this.destinationX;
+	this.destinationY;
+	this.rotation;
+	this.xIncrement;
+	this.yIncrement;
+
+	this.collisionState = false;
 
 	var that = this;
 
-	this.init = function(x, y, direction) {
-		that.velX = 1 * direction;
-		that.velY = 1;
+	this.init = function(x, y, direction, mx, my, rotation) {
+
+		that.velX = 10 * direction;
+		that.velY = 10;
 		that.x = x + 20;
 		that.y = y + that.height;
 		that.sX = 0;
+		that.rotation = rotation;
+		that.destinationX = mx - that.x + 0.1;
+		that.destinationY = my - that.y + -0.1;
+
+		var slope = Math.max(Math.abs(that.destinationX), Math.abs(that.destinationY));
+		that.xIncrement = that.destinationX / slope;
+		that.yIncrement = that.destinationY / slope;
+
 	}
 
-	this.draw = function(rotation) {
+	this.draw = function() {
+
+		that.sX = that.width * that.frame;
+			 
 		ctx.save();
-		console.log('draw bullet', rotation, this.x, this.y);
-
 	    ctx.translate(that.x + that.width/2, that.y + that.height/2);
-
-	    ctx.rotate(rotation);
-	 
-		ctx.drawImage(shooterImage, that.sX, that.sY, 24, 24, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-
-	    ctx.restore();	  
+	    ctx.rotate(that.rotation);
+		ctx.drawImage(element, that.sX, that.sY, 24, 24, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+	    ctx.restore();  
 	}
 
-  	this.update = function(mx, my) {
+  	this.update = function() {
 
-    var destinationX = mx - that.x + 0.1;
-    var destinationY = my - that.y + -0.1;
-    
-    var xIncrement = (destinationX)/Math.abs(destinationX);
-    var yIncrement = destinationY/Math.abs(destinationY);
-    // console.log('enmy destination', mx, my);
+    that.x += that.velX * that.xIncrement;
+    that.y += that.velY * that.yIncrement;
 
-    that.x += xIncrement;
-    that.y += yIncrement;
-    // that.x += 1;
-    // that.y += 1;
   }
 
 }

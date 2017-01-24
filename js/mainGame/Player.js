@@ -1,7 +1,9 @@
 function Player() {
+
 	var gameUI = GameUI.getInstance();
 	var canvas = gameUI.getCanvas();
 	var ctx = gameUI.getContext();
+
 	var letterA = 65;
 	var letterD = 68;
 	var letterW = 87;
@@ -12,10 +14,10 @@ function Player() {
 
 	this.x;
 	this.y;
-	// this.velX = 1;
-	// this.velY = 1;
+
 	this.playerCenterX = this.x + this.width / 2;
 	this.playerCenterY = this.y + this.height / 2;
+	this.playerRotation;
 	
 	this.type;
 	this.state;
@@ -24,6 +26,7 @@ function Player() {
 	this.sY = 0;
 	this.width = 48;
 	this.height = 48;
+	this.sWidth = 48;
 
 	this.frame = 0;
 
@@ -33,6 +36,7 @@ function Player() {
 		that.x = x;
 		that.y = y;
 	}
+
 	this.setDimension = function(width, height) {
 		that.width = width;
 		that.height = height;
@@ -52,22 +56,19 @@ function Player() {
 				}
 			}
 		}
-		that.sX = that.width * that.frame;
+
+		that.sX = that.sWidth * that.frame;
 
 		ctx.save();
-			// console.log(this.x, this.y);
-
-	    ctx.translate(that.x + that.width/2, that.y + that.height/2);
-
-	    ctx.rotate(rotation);
-	 
-		ctx.drawImage(shooterImage, that.sX, that.sY, 48, 48, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-
-	    ctx.restore();
+	  ctx.translate(that.x + that.width/2, that.y + that.height/2);
+	  ctx.rotate(rotation);
+		ctx.drawImage(element, that.sX, that.sY, 48, 48, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+	  ctx.restore();
 
 	}
 	
 	this.update = function(keyState) {
+		
 		if (keyState[letterA]){
 				that.x -= 3;
 			}
