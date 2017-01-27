@@ -29,14 +29,22 @@ function Bullet() {
 
 	this.init = function(x, y, direction, mx, my, rotation) {
 
-		that.velX = 10 * direction;
+		that.velX = 10;
 		that.velY = 10;
-		that.x = x + 20;
-		that.y = y + that.height;
+		that.x = x + 24;
+		that.y = y + 36;
+
+		if (direction % 2 == 0){
+			var temp = that.x;
+			that.x = x + 48;
+			that.y = y + 10;
+			// that.y = temp;
+		}
+
 		that.sX = 0;
 		that.rotation = rotation;
 		that.destinationX = mx - that.x + 0.1;
-		that.destinationY = my - that.y + -0.1;
+		that.destinationY = my - that.y + 0.1;
 
 		var slope = Math.max(Math.abs(that.destinationX), Math.abs(that.destinationY));
 		that.xIncrement = that.destinationX / slope;

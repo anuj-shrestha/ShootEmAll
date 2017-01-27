@@ -10,23 +10,25 @@ function Player() {
 	var letterS = 83;
 
 	var element = new Image();
-	element.src = "images/shooter-sprite.png";
+	element.src = "images/spaceship-game-2.png";
 
 	this.x;
 	this.y;
 
-	this.playerCenterX = this.x + this.width / 2;
-	this.playerCenterY = this.y + this.height / 2;
+	this.centerX = this.x + this.width / 2;
+	this.centerY = this.y + this.height / 2;
 	this.playerRotation;
 	
 	this.type;
 	this.state;
+	this.health = 200;
 
-	this.sX = 0;
-	this.sY = 0;
+	this.sX = 7;
+	this.sY = 4;
 	this.width = 48;
 	this.height = 48;
-	this.sWidth = 48;
+	this.sWidth = 34;
+	this.sHeight = 40;
 
 	this.frame = 0;
 
@@ -48,21 +50,34 @@ function Player() {
 			that.frame++;
 			if (that.frame >= 4){
 				that.frame = 0;
-				if(that.sY === 0){
-					that.sY = 48;
+				if(that.sY === 4){
+					that.sY = 48+4;
 				}
 				else {
-					that.sY = 0;
+					that.sY = 4;
 				}
 			}
 		}
 
-		that.sX = that.sWidth * that.frame;
+		that.sX = (that.sWidth + 14) * that.frame +7;
 
 		ctx.save();
 	  ctx.translate(that.x + that.width/2, that.y + that.height/2);
 	  ctx.rotate(rotation);
-		ctx.drawImage(element, that.sX, that.sY, 48, 48, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+
+		if (that.health < 190 && that.health > 70){
+			ctx.drawImage(element, 0, 384, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		}
+		else if (that.health <= 70 && that.health > 50){
+			ctx.drawImage(element, 48, 384, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		}
+		else if (that.health <= 50 && that.health > 25){
+			ctx.drawImage(element, 96, 384, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		}
+		else if (that.health <= 25){
+			ctx.drawImage(element, 142, 384, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		}
 	  ctx.restore();
 
 	}
@@ -81,11 +96,12 @@ function Player() {
 			if (keyState[letterS]){
 				that.y += 3;
 			}
+
 			that.x = Math.max(Math.min(that.x, gameUI.getWidth() - that.width), 0);
 			that.y = Math.max(Math.min(that.y, gameUI.getHeight() - that.height), 0);
 
-			that.playerCenterX = that.x + that.width / 2;
-			that.playerCenterY = that.y + that.height / 2;
+			that.centerX = that.x + that.width / 2;
+			that.centerY = that.y + that.height / 2;
 
 			// if (keyState[letterA] || keyState[letterD] || keyState[letterW] || keyState[letterS]){
 			// 	this.frame += 0.25;

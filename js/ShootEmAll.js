@@ -3,8 +3,8 @@
 (function() {
 	// constants are defined here
 	
-	var WIDTH = 900;
-	var HEIGHT = 500;
+	var WIDTH = window.innerWidth;
+	var HEIGHT = window.innerHeight;
 
 	var keyState;
 
@@ -12,6 +12,10 @@
 	  x: 0,
 	  y: 0
 	};
+
+	var requestAnimation;
+	var gameTime = 0;
+	var collision = 0;
 
 	var enemies = [];
 	var bullets = [];
@@ -23,12 +27,6 @@
 		var canvas = gameUI.getCanvas();
 
 		var that = this;
-		
-		// var mainWrapper = document.getElementsByClassName(
-		// 	'main-wrapper');
-
-		// var imageObj = new Image();
-  	// imageObj.src = 'images/the-town.png';
 
   	// get mouse co-ordinates on mouse move
 		canvas.addEventListener('mousemove', function(evt) {
@@ -44,43 +42,56 @@
 			gameUI.setWidth(WIDTH);
 			gameUI.setHeight(HEIGHT);
 
-			this.player = new Player();
-			this.player.x = 0;
-			this.player.y = 0;
-			this.player.height = 96;
-			this.player.width = 96;
-			this.player.playerRotation;
+			gameSound = new GameSound();
+			gameSound.init();
+			gameSound.play('gameSong');
 
-			for (var i = 0; i < 6; i++) {
-				
-				this.enemy = new Enemy();
-				
-				this.enemy.x = Utils.getRandom(0, WIDTH);
-				this.enemy.y = Utils.getRandom(0 , HEIGHT);
-				
-				enemies.push(this.enemy);
-			}
+			this.background = new Background();
+			this.background.x = -this.background.centerX / 2;
+			this.background.y = -this.background.centerY / 2;
+
+			this.player = new Player();
+			this.player.height = 72;
+			this.player.width = 72;
+			this.player.x = WIDTH / 2 - that.player.height;
+			this.player.y = HEIGHT / 2 - that.player.width;
+			
+
+				for (var i = 0; i < 10; i++) {
+					
+					this.enemy = new Enemy();
+					this.enemy.x = Utils.getRandom(-2000, 4000);
+					this.enemy.y = Utils.getRandom(-1000 , 2000);
+					enemies.push(this.enemy);
+				}
+
 
 			var startGameLoop = function() {
 
+				gameTime++;
 				update();
 				draw();
 				that.checkBulletEnemyCollision();
 				that.checkPlayerEnemyCollision();
 
-				window.requestAnimationFrame(startGameLoop, canvas);
+				if (enemies.length < 5){
+					that.generateEnemies();
+				}
+
+				requestAnimation = window.requestAnimationFrame(startGameLoop, canvas);
 			};
 
-			window.requestAnimationFrame(startGameLoop, canvas);
+			requestAnimation = window.requestAnimationFrame(startGameLoop, canvas);
 		}
 
 		function update() {
 
 			that.player.update(keyState);
+			that.background.update(keyState);
 
 			for (var i = 0; i < enemies.length; i++) {
 
-	      enemies[i].update(that.player.x, that.player.y);
+	      enemies[i].update(that.player.x, that.player.y, that.background.xIncrement, that.background.yIncrement);
 
    		}
 			
@@ -90,8 +101,11 @@
 			
 			gameUI.clear(0, 0, WIDTH, HEIGHT);
 
-			var targetX = mouse.x - that.player.x;
-		  var targetY = mouse.y - that.player.y;
+			that.background.draw();
+
+			var targetX = mouse.x - that.player.centerX;
+		  var targetY = mouse.y - that.player.centerY;
+
 		  that.player.playerRotation = Math.atan2(targetY, targetX) - Math.PI / 2;
 		  that.player.draw(that.player.playerRotation);
 
@@ -132,8 +146,9 @@
 		document.addEventListener('click', function(evt) {
 
 			var bullet = new Bullet();
-			bullet.init(that.player.x, that.player.y, 1, mouse.x, mouse.y, that.player.playerRotation);
+			bullet.init(that.player.x, that.player.y, gameTime, mouse.x, mouse.y, that.player.playerRotation);
 			bullets.push(bullet);
+			gameSound.play('bullet');
 
 		});
 
@@ -164,24 +179,29 @@
 
 		      var collision = Utils.getAABBIntersect(bulletFired.x, bulletFired.y, bulletFired.width, bulletFired.height, enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
 		      if(collision) {
+
 		      	that.deleteBullet(bulletFired, j);
 		      	that.killEnemy(enemyAttacking, i);
+
 		      }
-		      else {
-		      	enemyAttacking.velX = 1;
-		      	enemyAttacking.velY = 1;
+		      else{
+		      	// collisionTime = 0;
 		      }
 	    	}
 	    }	
 		}
+
 		var tempTimer = 0;
-		var tempHealth = 100;
+
 		that.deleteBullet = function(element, index) {
+
+			gameSound.play('bulletHit');
+
 			element.velX -= 1;
 			element.velY -= 1;
 			element.sY = 120;
 
-			if (tempTimer % 10 === 0){
+			if (tempTimer % 5 === 0){
 				element.frame++;
 				if (element.frame >= 3){
 					element.frame = 0;		
@@ -199,13 +219,11 @@
 		}
 
 		that.killEnemy = function(element, index) {
-			element.velX = .8;
-			element.velY = .8;
-		
+	
 			if(element.health < 0){
 				element = null;
 				enemies.splice(index, 1);
-				tempHealth = 100;
+				gameSound.play('killEnemy');	
 			}
 			else{
 				element.health--;
@@ -219,21 +237,59 @@
 			for (var i = 0; i < enemies.length; i++) {
 				var enemyAttacking = enemies[i];					
 	      var collision = Utils.getAABBIntersect(that.player.x, that.player.y, that.player.width, that.player.height, enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
-
+	      collisionTime = 0;
 	      if(collision) {
 
+	      	collisionTime++;
+	      	if (collisionTime < 10){
+	      	gameSound.play('playerPain');
+	      	}
 	      	enemyAttacking.velX = 0.5;
 	      	enemyAttacking.velY = 0.5;
 	      	enemyAttacking.sY = 288;
+	      	that.player.health--;
+					
+	      	if (that.player.health <= 0) {
+
+	      		that.gameOverCase();
+	      	}
+
 	      }
 	      else {
+
 	      	enemyAttacking.velX = 1;
 	      	enemyAttacking.velY = 1;
+
+	      	// if(enemyAttacking.velX >= 1){
+	      	// 	enemyAttacking.velX = 1;
+	      	// 	enemyAttacking.velY = 1;
+	      	// }
 	      }
 	    }	
 
 		}
 
+		that.generateEnemies = function() {
+
+			for (var i = enemies.length; i < 10; i++) {
+				
+				this.enemy = new Enemy();
+				
+				this.enemy.x = Utils.getRandom(-2000, 4000);
+				this.enemy.y = Utils.getRandom(-1000 , 2000);
+				
+				enemies.push(this.enemy);
+			}
+
+		}
+
+		that.gameOverCase = function() {
+			console.log('gameOverCase');
+			gameSound.play('playerDie');	
+
+			window.cancelAnimationFrame(requestAnimation);
+			that.player = null;
+		}
 
 	}
 
