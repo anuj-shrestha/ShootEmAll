@@ -57,6 +57,10 @@ var GameUI = (function() {
 		}
 
 		this.draw = function(image, sx, sy, sWidth, sHeight, x, y, width, height ) {
+			// ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
+	  //   ctx.shadowOffsetX = 0;
+	  //   ctx.shadowOffsetY = 0;
+	  //   ctx.shadowBlur = 2;
 			ctx.drawImage(image, sx, sy, sWidth, sHeight, x, y, width, height);
 		}
 
@@ -66,9 +70,12 @@ var GameUI = (function() {
 			ctx.fill();
 		}
 
-		this.writeText = function(text, x, y) {
-			ctx.font = '20px Sans-Serif';
-			ctx.fillStyle = 'white';
+		this.writeText = function(text, font, x, y, color) {
+			if(color===undefined) {
+				color = "#fff";
+			}
+			ctx.font =  font + 'px Creepster';
+			ctx.fillStyle = color;
 			ctx.fillText(text, x, y);
 		}
 		

@@ -9,15 +9,24 @@ function Enemy() {
 	var element = new Image();
 	element.src = "images/spaceship-game-2.png";
 
+	var letterA = 65;
+	var letterD = 68;
+	var letterW = 87;
+	var letterS = 83;
+
 	this.x;
 	this.y;
-	this.velX = 1;
-	this.velY = 1;
+	this.initialVelocity = 1.5;
+	this.velX = this.initialVelocity;
+	this.velY = this.initialVelocity;
+	this.destinationX;
+	this.destinationY;
 	
 	this.type;
 	this.state;
 	this.health = 100;
 	this.time = 0;
+	this.collisionFlag = false;
 
 	this.sX = 0;
 	this.sY = 144;
@@ -34,11 +43,14 @@ function Enemy() {
 
 		if (that.time % 8 === 0 || that.time % 8 === 0){
 			that.frame++;
+
 			if (that.frame >= 4){
 				that.frame = 0;
+
 				if(that.sY === 144){
 					that.sY = 144 + 48;
 				}
+
 				else {
 					that.sY = 144;
 				}
@@ -55,35 +67,63 @@ function Enemy() {
 		if (that.health < 90 && that.health > 70){
 			ctx.drawImage(element, 0, 384, that.sWidth, that.sWidth, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
 		}
+
 		else if (that.health <= 70 && that.health > 50){
 			ctx.drawImage(element, 48, 384, that.sWidth, that.sWidth, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
 		}
+
 		else if (that.health <= 50 && that.health > 25){
 			ctx.drawImage(element, 96, 384, that.sWidth, that.sWidth, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
 		}
+
 		else if (that.health <= 25){
 			ctx.drawImage(element, 142, 384, that.sWidth, that.sWidth, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
 		}
-		if (that.sX === 96 && this.velX === 0.5){
+		
+		if (that.sX === 96 && that.sY === 288 && that.time % 5 === 0){
 			ctx.drawImage(element, that.sX, that.sY + 48, that.sWidth, that.sWidth, that.width/2 * -1, that.height/2, that.width, that.height);
 		}
 		ctx.restore();		
 
 	}
 	
-	this.update = function(playerX, playerY, bgX, bgY) {
+	this.update = function(playerX, playerY, bgX, bgY, keyState) {
 
 		that.time++;
 
-		var destinationX = playerX - that.x + 0.1;
-		var destinationY = playerY - that.y + 0.1;
-		var max = Math.max(Math.abs(destinationX), Math.abs(destinationY));
-		var xIncrement = destinationX/max;
-		var yIncrement = destinationY/max;
-		// console.log('enmy health', that.health);
+		that.destinationX = playerX - that.x + 0.1;
+		that.destinationY = playerY - that.y + 0.1;
+		
+		var max = Math.max(Math.abs(that.destinationX), Math.abs(that.destinationY));
+		var xIncrement = that.destinationX / max;
+		var yIncrement = that.destinationY / max;
 
-		that.x += xIncrement * that.velX * 1.5 + bgX;
-		that.y += yIncrement * that.velY * 1.5 + bgY;
+		that.x += xIncrement * that.velX;
+		that.y += yIncrement * that.velY;
+
+		if (keyState[letterA]){
+
+	      that.x += 2;
+
+	    }
+	    else if (keyState[letterD]){
+
+	      that.x -= 2;
+
+	    }
+	    else if (keyState[letterW]){
+	      
+	      that.y += 2;
+
+	    }
+	    else if (keyState[letterS]){
+
+	      that.y -= 2;
+
+	    }
+	    else{
+
+	    }
 
 		// that.x = Math.max(Math.min(that.x, gameUI.getWidth() - that.width), 0);
 		// that.y = Math.max(Math.min(that.y, gameUI.getHeight() - that.height), 0);

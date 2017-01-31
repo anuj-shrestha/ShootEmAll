@@ -21,34 +21,40 @@ var Preloader = (function() {
 		}
 
 		this.loadImages = function(imageSources) {
+			
 			var images =  {};
 			var loadedImages = 0;
 			var totalImages = 0;
 		}
 
 		for (var key in imageSources) {
+
 			totalImages++;
 		}
 
 		for (var key in imageSources) {
+
 			images[key] = new Image();
 			images[key].src = imageSources[key];
 
 			images[key].onload = function() {
 				loadedImages++;
 
-				if(loadedImages >= totalImages){
+				if(loadedImages >= totalImages) {
 					that.initMainApp();
 				}
 			}
 		}
 
 		this.initMainApp = function() {
+
 		  var shootEmAllInstance = ShootEmAll.getInstance();
 		  shootEmAllInstance.init();
 		}
 	}
+
 	window.onload = function() {
+
 		var preloader = new Preloader();
 		preloader.init();
 	}
