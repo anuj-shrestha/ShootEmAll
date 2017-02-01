@@ -25,17 +25,14 @@ var Utils = (function() {
 
 	    if (offsetX >= offsetY) {
 
-	      if (vY > 0 && vY < 37) {
+	      if (vY > 0) {
 	        collisionDirection = 't';
-	        
-	          objA.y += offsetY;
-	        
+	        objA.y += offsetY;
 	      } 
 	      
 	      else if (vY < 0) {
 	        collisionDirection = 'b';
-	          objA.y -= offsetY;
-	        
+	        objA.y -= offsetY;
 	      }
 	    } 
 	    

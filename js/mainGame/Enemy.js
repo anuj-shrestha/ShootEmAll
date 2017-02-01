@@ -103,22 +103,22 @@ function Enemy() {
 
 		if (keyState[letterA]){
 
-	      that.x += 2;
+	      that.x += 3;
 
 	    }
 	    else if (keyState[letterD]){
 
-	      that.x -= 2;
+	      that.x -= 3;
 
 	    }
 	    else if (keyState[letterW]){
 	      
-	      that.y += 2;
+	      that.y += 3;
 
 	    }
 	    else if (keyState[letterS]){
 
-	      that.y -= 2;
+	      that.y -= 3;
 
 	    }
 	    else{

@@ -48,9 +48,12 @@ function GameSound() {
     } 
 
     else if (element == 'machineGun') {
-      bullet.pause();
-      bullet.currentTime = 0;
-      bullet.play();
+      machineGun.pause();
+      machineGun.play();
+
+      if (machineGun.ended) {
+       machineGun.currentTime = 0;
+      }
     } 
 
     else if (element == 'bulletHit') {
@@ -68,5 +71,9 @@ function GameSound() {
       }, false);
       gameSong.play();
     } 
+  }
+
+  this.stopMachineGunSound = function() {
+    machineGun.pause();
   }
 }

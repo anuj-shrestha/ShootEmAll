@@ -67,22 +67,22 @@ function Background() {
 	this.update = function(keyState) {
 		
 		if (keyState[letterA]){
-			that.x += 2;
+			that.x += 3;
 			that.xIncrement = 2;
 		}
 
 		else if (keyState[letterD]){
-			that.x -= 2;
+			that.x -= 3;
 			that.xIncrement = -2;
 		}
 
 		else if (keyState[letterW]){
-			that.y += 2;
+			that.y += 3;
 			that.yIncrement = 2;
 		}
 
 		else if (keyState[letterS]){
-			that.y -= 2;
+			that.y -= 3;
 			that.yIncrement = -2;
 		}
 

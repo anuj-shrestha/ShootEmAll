@@ -57,7 +57,7 @@ var GameUI = (function() {
 		}
 
 		this.draw = function(image, sx, sy, sWidth, sHeight, x, y, width, height ) {
-			// ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
+		// ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
 	  //   ctx.shadowOffsetX = 0;
 	  //   ctx.shadowOffsetY = 0;
 	  //   ctx.shadowBlur = 2;

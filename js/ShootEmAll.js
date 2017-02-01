@@ -22,7 +22,7 @@
 	var gameScore = 0;
 
 	var enemies = [];
-	var maxEnemies = 20;
+	var maxEnemies = 1;
 	var bullets = [];
 	var maxBullets = 100;
 	var bulletCount = 100;
@@ -33,6 +33,7 @@
 	var emptyHealthBar;
 	var tree;
 	var treesArray = [];
+	var treesPosition = [-100, -100, 300, -180, 600, -150, -50, 600, 120, 800, -123, 300, 900, 344, 1222, 903, 1300, 700, 500, 1000, 0, 1100, -700, -300, -123, 1111, -324, 444, -2222, -333, -1111, -400, -412]
 	var powerUp = null;
 	var powerUpState = false;
 	
@@ -101,7 +102,7 @@
 				powerUp.powerUp();
 			}
 
-			for (var i = 0; i < 5; i++){
+			for (var i = 0; i < 20; i++){
 
 				tree = new Elements();
 
@@ -112,6 +113,8 @@
 				else {
 					tree.tree2();
 				}
+				tree.x = treesPosition[i];
+				tree.y = treesPosition[i + 1];
 				treesArray.push(tree);
 			}
 			
@@ -138,8 +141,11 @@
 						bullet.init(that.player.x, that.player.y, gameTime, mouse.x, mouse.y, that.player.playerRotation);
 						bullets.push(bullet);
 						bulletCount--;
-						// if (gameTime > tempTime &&)
 						gameSound.play('machineGun');
+					}
+
+					if (mouseState === 0) {
+						gameSound.stopMachineGunSound();
 					}
 				}
 
@@ -206,8 +212,6 @@
 
 			that.background.draw();
 			that.walls.draw();
-			emptyHealthBar.drawHealthUI();
-			healthBar.drawHealthUI();
 			
 			var targetX = mouse.x - that.player.centerX;
 		  var targetY = mouse.y - that.player.centerY;
@@ -229,20 +233,27 @@
    		// dotted line showing gun direction
 			gameUI.drawDottedPath(that.player.x + that.player.width / 2, that.player.y + that.player.height / 2, mouse.x,  mouse.y); // Draw it
 
-			if (powerUp != null) {
-   			powerUp.drawHealthUI();
-   		}
-
+			// draw trees
    		for (var i = 0; i < treesArray.length; i++) {
 
 	      treesArray[i].drawTrees();
    		}
 
+   		// draw powerUps and health bar at the last
+   		if (powerUp != null) {
+   			powerUp.drawHealthUI();
+   		}
+
+   		emptyHealthBar.drawHealthUI();
+   		healthBar.drawHealthUI();
+
    		gameUI.writeText('Health: '+ that.player.health, 20, 4, 120);
+
    		if (powerUpState == false || bulletCount <= 0) {
    			gameUI.writeText('Gun: Pistol', 20, 120, 30);
    			gameUI.writeText('Bullets: Infinite', 20, 110, 60);
    		}
+
    		else if (powerUpState == true) {
    			gameUI.writeText('Gun: Machine Gun', 20, 110, 30);
    			gameUI.writeText('Bullets: '+ bulletCount, 20, 110, 60);

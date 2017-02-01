@@ -96,22 +96,22 @@ function Walls() {
   		var wallElement = wallElements[i];
 
 	    if (keyState[letterA]){
-	      wallElement.x += 2;
+	      wallElement.x += 3;
 	      wallElement.xIncrement = 1;
 	    }
 
 	    else if (keyState[letterD]){
-	      wallElement.x -= 2;
+	      wallElement.x -= 3;
 	      wallElement.xIncrement = -1;
 	    }
 
 	    else if (keyState[letterW]){
-	      wallElement.y += 2;
+	      wallElement.y += 3;
 	      wallElement.yIncrement = 1;
 	    }
 
 	    else if (keyState[letterS]){
-	      wallElement.y -= 2;
+	      wallElement.y -= 3;
 	      wallElement.yIncrement = -1;
 	    }
 
@@ -146,6 +146,8 @@ function Walls() {
 	  	else if (collisionDirection == 't' || collisionDirection == 'b') {
   			collider.velY = 0;
   			collider.velX = collider.initialVelocity * 1;
+  			console.log('collided t or b', collisionDirection);
+
   		}
   	}  		
 
