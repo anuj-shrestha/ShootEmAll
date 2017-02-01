@@ -7,7 +7,7 @@ function Enemy() {
 	var maxZombie = 10;
 
 	var element = new Image();
-	element.src = "images/spaceship-game-2.png";
+	element.src = "images/player-enemy-sprites.png";
 
 	var letterA = 65;
 	var letterD = 68;

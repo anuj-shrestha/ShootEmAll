@@ -10,7 +10,7 @@ function Player() {
 	var letterS = 83;
 
 	var element = new Image();
-	element.src = "images/spaceship-game-2.png";
+	element.src = "images/player-enemy-sprites.png";
 
 	this.x;
 	this.y;

@@ -7,7 +7,7 @@ var View = (function() {
 	function View() {
 
 		this.getMainWrapper = function() {
-			var element = document.getElementsByClassName('main-wrapper');
+			var element = document.getElementsByClassName('main-wrapper')[0];
 
 			return element;
 		}
@@ -23,7 +23,7 @@ var View = (function() {
     }
 
     this.append = function(parentElement, childElement) {
-        parentElement.appendChild(childElement);
+      parentElement.appendChild(childElement);
     }
 
     this.appendToBody = function(childElement) {

@@ -1,32 +1,46 @@
 // loads all necessary images
-var Preloader = (function() {
+function Preloader() {
 
-	var instance;
+	var view = View.getInstance();	
 
-	var Preloader = function() {
+	var loadingPercentage;
 
-		var imageSources;
-		var soundSources;
+	var imageSources;
+	var soundSources;
 
-		var that = this;
+	var that = this;
 
-		this.init = function() {
+	this.init = function() {
+		
+		loadingPercentage = view.create('div');
+		
+		view.addClass(loadingPercentage, 'loading-percentage');
+		view.setHTML(loadingPercentage, '0%');
+		view.appendToBody(loadingPercentage);
 
-			imageSource = {
-				1: 'images/shooter-sprites.png',
-				2: 'images/the-town.png',
-			}
-
-			that.loadImages(imageSource);
+		imageSource = {
+			1: 'images/plain-walls.png',
+			2: 'images/game-plain-bg.jpg',
+			3: 'images/gui.png',
+			4: 'images/power-up.png',
+			5: 'images/player-enemy-sprites.png',
+			6: 'images/trees.png',
+			7: 'images/walls.png',
+			8: 'images/enemy.png',
+			9: 'images/game-bg.jpg',
+			10: 'images/starting-screen.png',
+			11: 'images/start-btn.png'
 		}
 
-		this.loadImages = function(imageSources) {
-			
-			var images =  {};
-			var loadedImages = 0;
-			var totalImages = 0;
-		}
+		that.loadImages(imageSource);
+	}
 
+	this.loadImages = function(imageSources) {
+		
+		var images = {};
+		var loadedImages = 0;
+		var totalImages = 0;
+	
 		for (var key in imageSources) {
 
 			totalImages++;
@@ -39,24 +53,28 @@ var Preloader = (function() {
 
 			images[key].onload = function() {
 				loadedImages++;
+				percentage = Math.floor((loadedImages * 100) / totalImages);
+
+				view.setHTML(loadingPercentage, percentage + '%'); //displaying percentage
 
 				if(loadedImages >= totalImages) {
+					view.removeFromBody(loadingPercentage);
 					that.initMainApp();
 				}
 			}
 		}
-
-		this.initMainApp = function() {
-
-		  var shootEmAllInstance = ShootEmAll.getInstance();
-		  shootEmAllInstance.init();
-		}
 	}
 
-	window.onload = function() {
+	this.initMainApp = function() {
 
-		var preloader = new Preloader();
-		preloader.init();
+	  var shootEmAllInstance = ShootEmAll.getInstance();
+	  shootEmAllInstance.init();
 	}
+}
 
-}());
+window.onload = function() {
+
+	var preloader = new Preloader();
+	preloader.init();
+}
+

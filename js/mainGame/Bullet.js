@@ -4,7 +4,7 @@ function Bullet() {
 	var ctx = gameUI.getContext();
 
 	var element = new Image();
-	element.src = 'images/spaceship-game-2.png';
+	element.src = 'images/player-enemy-sprites.png';
 
 	this.x;
 	this.y;

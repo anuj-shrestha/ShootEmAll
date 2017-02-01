@@ -6,14 +6,16 @@ var GameUI = (function() {
 
 	function GameUI() {
 
-		var canvas = document.createElement('canvas');
+		var view = View.getInstance();
+		var mainWrapper = view.getMainWrapper();
+		var canvas = view.create('canvas');
 		var ctx = canvas.getContext('2d');
-		document.body.appendChild(canvas);
+		view.append(mainWrapper, canvas);
 
 		var that = this;
 
 		this.setWidth = function(width) {
-			console.log('width set', width);
+			console.log('width set', mainWrapper);
 			canvas.width = width;
 		}
 

@@ -1,0 +1,43 @@
+@font-face { 
+  font-family: 'Creepster'; 
+} 
+body{
+  overflow: hidden;
+}
+.starting-screen{
+  margin: 0 auto;
+  border: 1px solid black;
+  background: url('../images/starting-screen.png');
+  position: relative;
+}
+canvas {
+  border: 1px solid black;
+  margin: 0 auto;
+  cursor: crosshair;
+  display: none;
+}
+.start-game-btn{
+  width: 200px;
+  height: 50px;
+  color: #ffffff;
+  background: url('../images/start-btn.png');
+  position: absolute;
+  top: 10%;
+  left: 46%;
+  border: 2px solid black;
+}
+.instruction-container{
+  position: absolute;
+  top: 33%;
+  left: 8%;
+  width: 400px;
+  height: 400px;
+  font-size: 30px;
+  color: grey;
+}
+.loading-percentage {
+  font-size: 60px;
+  font-family: 'Creepster';
+  text-align: center;
+  padding: 100px;
+}

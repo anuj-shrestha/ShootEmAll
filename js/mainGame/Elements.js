@@ -147,8 +147,8 @@ function Elements() {
   this.gunPowerUp = function() {
 
     that.type = 18;
-    that.x = Utils.getRandom(50, 500);
-    that.y = Utils.getRandom(50, 500);
+    that.x = Utils.getRandom(50, 800);
+    that.y = Utils.getRandom(50, 600);
     that.sX = 100;
     that.sY = 0;
     that.sWidth = 100;
@@ -160,8 +160,8 @@ function Elements() {
   this.healthPowerUp = function() {
 
     that.type = 19;
-    that.x = Utils.getRandom(50, 500);
-    that.y = Utils.getRandom(50, 500);
+    that.x = Utils.getRandom(50, 800);
+    that.y = Utils.getRandom(50, 600);
     that.sX = 0;
     that.sY = 0;
     that.sWidth = 100;
@@ -186,7 +186,7 @@ function Elements() {
   this.tree1 = function() {
 
     that.type = 21;
-    that.x = Utils.getRandom(1000, 3000);
+    that.x = Utils.getRandom(1200, 3000);
     that.y = Utils.getRandom(-1000, 1000);
     that.sX = 0;
     that.sY = 0;
@@ -199,7 +199,7 @@ function Elements() {
   this.tree2 = function() {
 
     that.type = 22;
-    that.x = Utils.getRandom(1000, 3000);
+    that.x = Utils.getRandom(1200, 3000);
     that.y = Utils.getRandom(-1000, 1000);
     that.sX = 232;
     that.sY = 0;
