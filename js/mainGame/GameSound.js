@@ -7,6 +7,7 @@ function GameSound() {
   var bullet;
   var machineGun;
   var bulletHit;
+  var powerUpSound;
 
   var that = this;
 
@@ -18,6 +19,7 @@ function GameSound() {
     bullet = new Audio('sounds/bullet.wav');
     machineGun = new Audio('sounds/machine-gun.wav');
     bulletHit = new Audio('sounds/bullet-hit.wav');
+    powerUpSound = new Audio('sounds/oh-yeah.wav');
 
   }
 
@@ -31,8 +33,11 @@ function GameSound() {
 
     if (element == 'playerPain') {
       playerPain.pause();
-      playerPain.currentTime = 0;
+     
       playerPain.play();
+      if (playerPain.ended) {
+       machineGun.currentTime = 0;
+      }
     }  
 
     else if (element == 'killEnemy') {
@@ -58,8 +63,17 @@ function GameSound() {
 
     else if (element == 'bulletHit') {
       bulletHit.pause();
-      bulletHit.currentTime = 0;
       bulletHit.play();
+      
+      if (bulletHit.ended) {
+        bulletHit.currentTime = 0;
+      }
+    } 
+
+    else if (element == 'powerUpSound') {
+      powerUpSound.pause();
+      powerUpSound.currentTime = 0;
+      powerUpSound.play();
     } 
 
     else if (element == 'gameSong') {
@@ -75,5 +89,8 @@ function GameSound() {
 
   this.stopMachineGunSound = function() {
     machineGun.pause();
+  }
+  this.stopGameSong = function() {
+    gameSong.pause();
   }
 }

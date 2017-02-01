@@ -7,6 +7,9 @@ function Elements() {
   var healthGUI = new Image();
   healthGUI.src = 'images/gui.png';
 
+  var powerUpImage = new Image();
+  powerUpImage.src = 'images/power-up.png';
+
   var treeImage = new Image();
   treeImage.src = 'images/trees.png';
 
@@ -141,24 +144,50 @@ function Elements() {
     that.height = 100;
   }
 
-  this.powerUp = function() {
+  this.gunPowerUp = function() {
 
     that.type = 18;
     that.x = Utils.getRandom(50, 500);
     that.y = Utils.getRandom(50, 500);
+    that.sX = 100;
+    that.sY = 0;
+    that.sWidth = 100;
+    that.sHeight = 100;
+    that.width = 100;
+    that.height = 100;
+  }
+
+  this.healthPowerUp = function() {
+
+    that.type = 19;
+    that.x = Utils.getRandom(50, 500);
+    that.y = Utils.getRandom(50, 500);
     that.sX = 0;
-    that.sY = 20;
-    that.sWidth = 20;
-    that.sHeight = 20;
+    that.sY = 0;
+    that.sWidth = 100;
+    that.sHeight = 100;
+    that.width = 100;
+    that.height = 100;
+  }
+
+  this.bombPowerUp = function() {
+
+    that.type = 20;
+    that.x = Utils.getRandom(50, 500);
+    that.y = Utils.getRandom(50, 500);
+    that.sX = 200;
+    that.sY = 0;
+    that.sWidth = 100;
+    that.sHeight = 100;
     that.width = 100;
     that.height = 100;
   }
 
   this.tree1 = function() {
 
-    that.type = 19;
-    that.x = Utils.getRandom(800, 1000);
-    that.y = Utils.getRandom(-100, 800);
+    that.type = 21;
+    that.x = Utils.getRandom(1000, 3000);
+    that.y = Utils.getRandom(-1000, 1000);
     that.sX = 0;
     that.sY = 0;
     that.sWidth = 232;
@@ -169,9 +198,9 @@ function Elements() {
 
   this.tree2 = function() {
 
-    that.type = 20;
-    that.x = Utils.getRandom(800, 1000);
-    that.y = Utils.getRandom(-100, 800);
+    that.type = 22;
+    that.x = Utils.getRandom(1000, 3000);
+    that.y = Utils.getRandom(-1000, 1000);
     that.sX = 232;
     that.sY = 0;
     that.sWidth = 232;
@@ -221,6 +250,10 @@ function Elements() {
 
   this.drawHealthUI = function() {
     gameUI.draw(healthGUI, that.sX, that.sY, that.sWidth, that.sHeight, that.x, that.y, that.width, that.height)
+  }
+
+  this.drawPowerUp = function() {
+    gameUI.draw(powerUpImage, that.sX, that.sY, that.sWidth, that.sHeight, that.x, that.y, that.width, that.height)
   }
 
   this.drawTrees = this.draw = function() {

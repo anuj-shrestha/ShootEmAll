@@ -143,11 +143,10 @@ function Walls() {
   			collider.velX = 0;
   			collider.velY = collider.initialVelocity * 1.5;
 	  	}
+
 	  	else if (collisionDirection == 't' || collisionDirection == 'b') {
   			collider.velY = 0;
   			collider.velX = collider.initialVelocity * 1;
-  			console.log('collided t or b', collisionDirection);
-
   		}
   	}  		
 
