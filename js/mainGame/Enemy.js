@@ -24,6 +24,7 @@ function Enemy() {
 	
 	this.type;
 	this.state;
+	this.boss = false;
 	this.index;
 	this.health = 100;
 	this.time = 0;

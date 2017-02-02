@@ -29,7 +29,9 @@ function Preloader() {
 			8: 'images/enemy.png',
 			9: 'images/game-bg.jpg',
 			10: 'images/starting-screen.png',
-			11: 'images/start-btn.png'
+			11: 'images/start-btn.png',
+			12: 'images/friend-attacking.png',
+			13: 'images/friend-walking.png'
 		}
 
 		that.loadImages(imageSource);

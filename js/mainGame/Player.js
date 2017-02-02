@@ -21,9 +21,11 @@ function Player() {
 	this.centerY = this.y + this.height / 2;
 	this.playerRotation;
 	
-	this.type;
+	this.name;
 	this.state;
 	this.health = 200;
+	this.damage = 1;
+	this.initialVelocity = 3;
 
 	this.sX = 7;
 	this.sY = 4;
@@ -93,19 +95,19 @@ function Player() {
 	this.update = function(keyState) {
 		
 		if (keyState[letterA]) {
-				that.x -= 3 * that.velX;
+				that.x -= that.initialVelocity * that.velX;
 		}
 
 		if (keyState[letterD]) {
-			that.x += 3 * that.velX;
+			that.x += that.initialVelocity * that.velX;
 		}
 
 		if (keyState[letterW]) {
-			that.y -= 3 * that.velY;
+			that.y -= that.initialVelocity * that.velY;
 		}
 
 		if (keyState[letterS]) {
-			that.y += 3 * that.velY;
+			that.y += that.initialVelocity * that.velY;
 		}
 
 		that.x = Math.max(Math.min(that.x, gameUI.getWidth() - that.width), 0);

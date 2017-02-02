@@ -1,10 +1,10 @@
 @font-face { 
   font-family: 'Creepster'; 
 } 
-body{
+body {
   overflow: hidden;
 }
-.starting-screen{
+.starting-screen {
   margin: 0 auto;
   border: 1px solid black;
   background: url('../images/starting-screen.png');
@@ -16,19 +16,61 @@ canvas {
   cursor: crosshair;
   display: none;
 }
-.start-game-btn{
+.start-game-btn {
   width: 200px;
   height: 50px;
   color: #ffffff;
   background: url('../images/start-btn.png');
   position: absolute;
-  top: 10%;
+  top: 80%;
   left: 46%;
   border: 2px solid black;
 }
-.instruction-container{
+.select-player-btn-anuj {
   position: absolute;
-  top: 33%;
+  width: 300px;
+  height: 50px;
+  background: teal;
+  color: white;
+  font-size: 20px;
+  text-align: center;
+  top: 45%;
+  left: 77%;
+  border: 1px solid black;
+  border-radius: 20px;
+  padding: 5px;
+}
+.select-player-btn-shyam {
+  position: absolute;
+  width: 300px;
+  height: 50px;
+  background: silver;
+  color: black;
+  font-size: 20px;
+  text-align: center;
+  top: 18%;
+  left: 50%;
+  border: 1px solid black;
+  border-radius: 20px;
+  padding: 5px;
+}
+.select-player-btn-hari {
+  position: absolute;
+  width: 300px;
+  height: 50px;
+  background: pink;
+  color: green;
+  font-size: 20px;
+  text-align: center;
+  top: 40%;
+  left: 26%;
+  border: 1px solid black;
+  border-radius: 20px;
+  padding: 5px;
+}
+.instruction-container {
+  position: absolute;
+  top: 25%;
   left: 8%;
   width: 400px;
   height: 400px;

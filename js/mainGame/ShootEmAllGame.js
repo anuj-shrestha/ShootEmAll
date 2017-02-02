@@ -29,10 +29,15 @@ function ShootEmAllGame() {
 	var gameScore = 0;
 	var oldHighScore = localStorage.getItem('shootEmAllHighScore');
 
+	var currentPlayerName;
 
 	var enemies = [];
 	var maxEnemies = 20;
 	var enemyIndex = 0;
+	var enemyBoss = null;
+	var enemyBossCount = 0;
+	var enemyLeft = maxEnemies;
+
 	var bullets = [];
 	var maxBullets = 100;
 	var bulletCount = 100;
@@ -58,7 +63,9 @@ function ShootEmAllGame() {
 
   }, false);
 
-	this.init = function() {
+	this.init = function(playerName) {
+
+		currentPlayerName = playerName;
 
 		gameUI.setWidth(WIDTH);
 		gameUI.setHeight(HEIGHT);
@@ -88,6 +95,24 @@ function ShootEmAllGame() {
 			this.player.width = 72;
 			this.player.x = WIDTH / 2 - that.player.height;
 			this.player.y = HEIGHT / 2 - that.player.width;
+
+			if (currentPlayerName == 'anuj') {
+				this.player.health = 60;
+				this.player.initialVelocity = 5;
+				this.player.damage = 2.6;
+			}
+
+			else if (currentPlayerName == 'shyam') {
+				this.player.health = 400;
+				this.player.initialVelocity = 1;
+				this.player.damage = 1.2;
+			}
+
+			else if (playerName == 'hari') {
+				this.player.health = 200;
+				this.player.initialVelocity = 3;
+				this.player.damage = 1;
+			}
 		}
 
 		if (enemies.length == 0) {
@@ -101,8 +126,9 @@ function ShootEmAllGame() {
 					this.enemy.x += 1000;
 					this.enemy.y += 1000;
 				}
-				// this.enemy.index = enemyIndex;
-				enemies.push(this.enemy);
+				this.enemy.index = enemyIndex;
+
+				enemies[enemyIndex] = this.enemy;
 				enemyIndex++;
 			}
 		}
@@ -172,10 +198,8 @@ function ShootEmAllGame() {
 			that.checkBulletEnemyCollision();
 			that.checkPlayerEnemyCollision();
 			that.resetEnemyProperties();
-
-			if (enemies.length < 5) {
-				that.generateEnemies();
-			}
+			that.generateEnemies();
+			
 
 			if (!stopped) {
 				requestAnimation = window.requestAnimationFrame(startGameLoop, canvas);
@@ -208,10 +232,12 @@ function ShootEmAllGame() {
       }
  		}
  		
-		for (var i = 0; i < enemies.length; i++) {
+		for (var i = 0; i < enemyIndex; i++) {
 
-      enemies[i].update(that.player.x, that.player.y, that.background.xIncrement, that.background.yIncrement, keyState);
-      that.walls.wallEnemyCollisionCheck(enemies[i]);
+			if (enemies[i] != undefined) {
+	      enemies[i].update(that.player.x, that.player.y, that.background.xIncrement, that.background.yIncrement, keyState);
+	      that.walls.wallEnemyCollisionCheck(enemies[i]);
+    	}
  		}
 
  		if (powerUp != null) {
@@ -230,6 +256,7 @@ function ShootEmAllGame() {
 
 		that.background.draw();
 		that.walls.draw();
+
 		if (mouse.x != 0 && mouse.y != 0) {
 			targetX = mouse.x - that.player.centerX;
 		  targetY = mouse.y - that.player.centerY;
@@ -237,10 +264,12 @@ function ShootEmAllGame() {
 	  that.player.playerRotation = Math.atan2(targetY, targetX) - Math.PI / 2;
 	  that.player.draw(that.player.playerRotation);
 
-	  for (var i = 0; i < enemies.length; i++) {
+	  for (var i = 0; i < enemyIndex; i++) {
 
-      enemies[i].rotation = Math.atan2((that.player.y - enemies[i].y), (that.player.x - enemies[i].x)) - Math.PI / 2;
-      enemies[i].draw(enemies[i].rotation);
+	  	if (enemies[i] != undefined) {
+	      enemies[i].rotation = Math.atan2((that.player.y - enemies[i].y), (that.player.x - enemies[i].x)) - Math.PI / 2;
+	      enemies[i].draw(enemies[i].rotation);
+	    }  
  		}
 		
 		for (var i = 0; i < bullets.length; i++) {
@@ -370,6 +399,7 @@ function ShootEmAllGame() {
 	  e.preventDefault();
 
 	  for (var i = 0; i < touches.length; i++) {
+
 	    if (touches[i].pageX > 0) {
 	      keyState[letterA] = false;
 	      keyState[letterD] = false;
@@ -382,29 +412,32 @@ function ShootEmAllGame() {
 	// check collision
 	that.checkBulletEnemyCollision = function() {
 
-		for (var i = 0; i < enemies.length; i++) {
+		for (var i = 0; i < enemyIndex; i++) {
 
-			var enemyAttacking = enemies[i];
-			for (var j = 0; j < bullets.length; j++) {
+			if (enemies[i] != undefined) {
+				var enemyAttacking = enemies[i];
 
-				var bulletFired = bullets[j];
+				for (var j = 0; j < bullets.length; j++) {
 
-	      if (bulletFired.x < 0 || bulletFired.x > WIDTH || bulletFired.y < 0 ||
-	       bulletFired.y > HEIGHT) {
-	      	bullets.splice(j, 1);
-	      }
+					var bulletFired = bullets[j];
 
-	      var collision = Utils.getAABBIntersect(bulletFired.x, bulletFired.y, bulletFired.width, bulletFired.height, 
-	      	enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
+		      if (bulletFired.x < 0 || bulletFired.x > WIDTH || bulletFired.y < 0 ||
+		       bulletFired.y > HEIGHT) {
+		      	bullets.splice(j, 1);
+		      }
 
-	      if (collision) {
-	      	that.deleteBullet(bulletFired, j);
-	      	that.killEnemy(enemyAttacking, i);
-	      	enemyAttacking.velX = -0.5;
-	      	enemyAttacking.velY = -0.5;
+		      var collision = Utils.getAABBIntersect(bulletFired.x, bulletFired.y, bulletFired.width, bulletFired.height, 
+		      	enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
 
-	      }
-    	}
+		      if (collision) {
+		      	that.deleteBullet(bulletFired, j);
+		      	that.killEnemy(enemyAttacking, enemyAttacking.index);
+		      	enemyAttacking.velX = -0.5;
+		      	enemyAttacking.velY = -0.5;
+
+		      }
+	    	}
+	    }
     }	
 	}
 
@@ -439,14 +472,18 @@ function ShootEmAllGame() {
 
 		if (element.health < 0){
 			element = null;
-			enemies.splice(index, 1);
-			console.log('enemy spliced', index);
-			gameSound.play('killEnemy');
-			gameScore++;	
-		}
-		else{
-			element.health--;
 
+			if (enemies[index] == enemyBoss) {
+				enemyBoss = null;
+			}
+			delete enemies[index];
+			
+			gameSound.play('killEnemy');
+			gameScore++;
+		}
+
+		else{
+			element.health -= that.player.damage;
 		}
 	}
 
@@ -454,41 +491,46 @@ function ShootEmAllGame() {
 		
 		// var currentPlayer = that.player;
 		
-		for (var i = 0; i < enemies.length; i++) {
+		for (var i = 0; i < enemyIndex; i++) {
 
-			var enemyAttacking = enemies[i];					
-      var collision = Utils.getAABBIntersect(that.player.x, that.player.y, that.player.width, that.player.height,
-       enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
-      var tempVel = enemyAttacking.velX;
-      collisionTime = 0;
-      var initialVelocity = enemyAttacking.velX;
+			if (enemies[i] != undefined) {
+				var enemyAttacking = enemies[i];					
+	      var collision = Utils.getAABBIntersect(that.player.x, that.player.y, that.player.width, that.player.height,
+	       enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
+	      var tempVel = enemyAttacking.velX;
+	      collisionTime = 0;
+	      var initialVelocity = enemyAttacking.velX;
 
-      if (collision) {
-      	collisionTime++;
+	      if (collision) {
+	      	collisionTime++;
 
-      	if (collisionTime < 5 || collisionTime % 20) {
-      		gameSound.play('playerPain');
-      	}
+	      	if (collisionTime < 5 || collisionTime % 20) {
+	      		gameSound.play('playerPain');
+	      	}
 
-      	enemyAttacking.velX = 0.5;
-      	enemyAttacking.velY = 0.5;
-      	enemyAttacking.sY = 288; //attacking sprites
-      	that.player.health--;
-				
-      	if (that.player.health <= 0) {
-      		that.gameOverCase();
-      	}
-      }
-    }	
+	      	enemyAttacking.velX = 0.5;
+	      	enemyAttacking.velY = 0.5;
+	      	enemyAttacking.sY = 288; //attacking sprites
+	      	that.player.health--;
+					
+	      	if (that.player.health <= 0) {
+	      		that.gameOverCase();
+	      	}
+	      }
+    	}
+    }		
 	}
 
 	that.resetEnemyProperties = function() {
 
-		for (var i = 0; i < enemies.length; i++) {
+		for (var i = 0; i < enemyIndex; i++) {
 
-			var enemyAttacking = enemies[i];					
-	    var collision = Utils.getAABBIntersect(that.player.x, that.player.y, that.player.width, that.player.height,
-	    	enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
+			if (enemies[i] != undefined) {
+
+				var enemyAttacking = enemies[i];					
+		    var collision = Utils.getAABBIntersect(that.player.x, that.player.y, that.player.width, that.player.height,
+		    	enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
+	  	}
 	  }
 	}
 
@@ -515,19 +557,48 @@ function ShootEmAllGame() {
 	}
 
 	that.generateEnemies = function() {
-		maxEnemies += 20;
-		for (var i = enemies.length; i < maxEnemies; i++) {
-			
-			this.enemy = new Enemy();
-			this.enemy.initialVelocity = maxEnemies * 0.02;
-			this.enemy.x = Utils.getRandom(-2000, 4000);
-			this.enemy.y = Utils.getRandom(-1000, 2000);
-			if (Math.abs(this.enemy.x - this.player.x) < 500 && Math.abs(this.enemy.y - this.player.y) < 500) {
-				this.enemy.x += 1000;
-				this.enemy.y += 1000;
+
+		var temp = 0;
+		var enemiesKilled = 0;
+
+		for (var i = 0; i < enemies.length; i++) {
+			if (enemies[i] == undefined) {
+				temp++;
 			}
-			// this.enemy.index = enemyIndex;
-			enemies.push(this.enemy);
+		}
+		enemyLeft = enemies.length - temp;
+		console.log('enemyLeft', enemyLeft);
+
+		if (enemyLeft < 2){
+			maxEnemies += 20;
+			enemyLeft = maxEnemies + 1;
+
+			for (var i = 0; i < maxEnemies; i++) {
+
+				this.enemy = new Enemy();
+				this.enemy.initialVelocity = maxEnemies * 0.02;
+		
+				if (gameScore >= 10 && enemyBoss == null){
+					enemyBossCount++;
+					enemyBoss = this.enemy;
+					this.enemy.initialVelocity = maxEnemies * 0.05;
+					this.enemy.health = 2000 * enemyBossCount;
+					this.enemy.boss = true;
+					this.enemy.width = 96 * enemyBossCount;
+					this.enemy.height = 96 * enemyBossCount;
+					
+				}
+				
+				this.enemy.x = Utils.getRandom(-2000, 4000);
+				this.enemy.y = Utils.getRandom(-1000, 2000);
+				if (Math.abs(this.enemy.x - this.player.x) < 500 && Math.abs(this.enemy.y - this.player.y) < 500) {
+					this.enemy.x += 1000;
+					this.enemy.y += 1000;
+				}
+				this.enemy.index = enemyIndex;
+				enemies[enemyIndex] = this.enemy;
+				enemyIndex++;
+			}
 		}
 	}
 
@@ -554,9 +625,10 @@ function ShootEmAllGame() {
 				maxBullets = 100;
 
 				enemies.length = 0;
-				ememies = [];
+				enemies = [];
 				enemyIndex = 0;
 				maxEnemies = 20;
+				enemyBoss = null;
 
 				gameTime = 0;
 				collision = 0;
@@ -571,7 +643,7 @@ function ShootEmAllGame() {
 				powerUp = null;
 				powerUpState = false;
 
-				that.init();
+				that.init(currentPlayerName);
 			}
 		});
 	}
