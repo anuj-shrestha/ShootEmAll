@@ -7,6 +7,15 @@ var Utils = (function() {
 		return ax < bx + bw && ay < by + bh && bx < ax + aw && by < ay + ah;
 	};
 
+	var calculateDistance = function(objA, objB) {
+		var objACenterX = objA.x + objA.width / 2;
+		var objACenterY = objA.y + objA.height / 2;
+		var objBCenterX = objB.x + objB.width / 2;
+		var objBCenterY = objB.y + objB.height / 2;
+
+		return Math.sqrt( (objACenterX - objBCenterX) * (objACenterX-objBCenterX) + (objACenterY - objBCenterY) * (objACenterY - objBCenterY));
+	}
+
 	var collisionCheck = function(objA, objB) {
 	  // get the vectors to check against
 	  var vX = (objA.x + (objA.width / 2)) - (objB.x + (objB.width / 2));
@@ -63,6 +72,7 @@ var Utils = (function() {
 		getAABBIntersect: AABBIntersect,
 		getRandom: generateRandom,
 		getCollisionDirection: collisionCheck,
+		getDistance: calculateDistance,
 	};
 
 } )();

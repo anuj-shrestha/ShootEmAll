@@ -97,27 +97,22 @@ function Walls() {
 
 	    if (keyState[letterA]){
 	      wallElement.x += 3;
-	      wallElement.xIncrement = 1;
 	    }
 
 	    else if (keyState[letterD]){
 	      wallElement.x -= 3;
-	      wallElement.xIncrement = -1;
 	    }
 
 	    else if (keyState[letterW]){
 	      wallElement.y += 3;
-	      wallElement.yIncrement = 1;
 	    }
 
 	    else if (keyState[letterS]){
 	      wallElement.y -= 3;
-	      wallElement.yIncrement = -1;
 	    }
 
 	    else{
 	      wallElement.xIncrement = 0;
-	      wallElement.yIncrement = 0;
 	    }
     }
   }

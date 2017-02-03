@@ -27,6 +27,7 @@ function Elements() {
   this.height = 32;
   this.sWidth;
   this.sHeight;
+  this.health = 1000;
 
   var that = this;
 
@@ -209,6 +210,19 @@ function Elements() {
     that.height = 240;
   }
 
+  this.getBase = function() {
+
+    that.type = 23;
+    that.x = 0;
+    that.y = 0;
+    that.sX = 300;
+    that.sY = 0;
+    that.sWidth = 100;
+    that.sHeight = 100;
+    that.width = 150;
+    that.height = 150;
+  }
+
   this.update = function(keyState) {
 
     if (keyState[letterA]){
@@ -256,7 +270,22 @@ function Elements() {
     gameUI.draw(powerUpImage, that.sX, that.sY, that.sWidth, that.sHeight, that.x, that.y, that.width, that.height)
   }
 
-  this.drawTrees = this.draw = function() {
+  this.drawTrees = function() {
     gameUI.draw(treeImage, that.sX, that.sY, that.width, that.height, that.x, that.y, that.width, that.height);
+  }
+
+  this.baseEnemyCollisionCheck = function(collider) {
+
+    var collisionDirection = Utils.getCollisionDirection(collider, that);
+
+    if (collisionDirection == 'l' || collisionDirection == 'r') {
+      collider.velX = 0;
+    }
+
+    else if (collisionDirection == 't' || collisionDirection == 'b') {
+      collider.velY = 0;
+    }
+
+    return collisionDirection;
   }
 }

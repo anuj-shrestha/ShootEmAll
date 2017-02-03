@@ -30,6 +30,9 @@ function ShootEmAllGame() {
 	var oldHighScore = localStorage.getItem('shootEmAllHighScore');
 
 	var currentPlayerName;
+	var currentMissionLvl;
+	var survivalTime = 300;
+	var survivalTimeLeft = 300;
 
 	var enemies = [];
 	var maxEnemies = 20;
@@ -46,9 +49,10 @@ function ShootEmAllGame() {
 	var elements;
 	var healthBar;
 	var emptyHealthBar;
+	var base = null;
 	var tree;
 	var treesArray = [];
-	var treesPosition = [-100, -100, 300, -180, 600, -150, -50, 600, 120, 800, -123, 300, 900, 344, 1222, 903, 1300, 700, 500, 1000, 0, 1100, -700, -300, -123, 1111, -324, 444, -2222, -333, -1111, -400, -412]
+	var treesPosition = [-100, -100, 300, -180, 600, -150, -50, 600, -120, 800, -123, 300, 900, 344, 1222, 903, 1300, 700, 500, 1000, 0, 1100, -700, -300, -123, 1111, -324, 444, -2222, -333, -1111, -400, -412]
 	var powerUp = null;
 	var powerUpState = false;
 	
@@ -63,9 +67,10 @@ function ShootEmAllGame() {
 
   }, false);
 
-	this.init = function(playerName) {
+	this.init = function(playerName, missionLvl) {
 
 		currentPlayerName = playerName;
+		currentMissionLvl = missionLvl;
 
 		gameUI.setWidth(WIDTH);
 		gameUI.setHeight(HEIGHT);
@@ -115,6 +120,14 @@ function ShootEmAllGame() {
 			}
 		}
 
+		if (currentMissionLvl == 1) {
+			base = new Elements();
+			base.getBase();
+			base.x = WIDTH / 2 - base.width / 2;
+			base.y = HEIGHT / 2 - base.height / 2;
+			maxEnemies = 30;
+		}
+
 		if (enemies.length == 0) {
 
 			for (var i = 0; i < maxEnemies; i++) {
@@ -127,7 +140,8 @@ function ShootEmAllGame() {
 					this.enemy.y += 1000;
 				}
 				this.enemy.index = enemyIndex;
-
+				this.enemy.width = Utils.getRandom(50, 96);
+				this.enemy.height = this.enemy.width; 
 				enemies[enemyIndex] = this.enemy;
 				enemyIndex++;
 			}
@@ -198,8 +212,10 @@ function ShootEmAllGame() {
 			that.checkBulletEnemyCollision();
 			that.checkPlayerEnemyCollision();
 			that.resetEnemyProperties();
-			that.generateEnemies();
-			
+
+			if (currentMissionLvl == 0 || currentMissionLvl == 1) {
+				that.generateEnemies();
+			}
 
 			if (!stopped) {
 				requestAnimation = window.requestAnimationFrame(startGameLoop, canvas);
@@ -213,6 +229,10 @@ function ShootEmAllGame() {
 
 		that.player.update(keyState);
 		that.walls.playerCollisionWithWallCheck(that.player);
+		if (currentMissionLvl == 1) {
+			base.baseEnemyCollisionCheck(that.player);
+		}
+		
 		that.background.update(keyState);
 		that.walls.update(keyState);
 
@@ -232,11 +252,34 @@ function ShootEmAllGame() {
       }
  		}
  		
+ 		if (currentMissionLvl == 1) {
+ 			base.update(keyState);
+ 		}
+
 		for (var i = 0; i < enemyIndex; i++) {
 
 			if (enemies[i] != undefined) {
-	      enemies[i].update(that.player.x, that.player.y, that.background.xIncrement, that.background.yIncrement, keyState);
+				if (currentMissionLvl == 1) {
+					enemies[i].update(that.player.x, that.player.y, that.player, base, keyState);
+				}
+				else {
+	      enemies[i].update(that.player.x, that.player.y, that.player, null, keyState);
+	      }
+
 	      that.walls.wallEnemyCollisionCheck(enemies[i]);
+
+	      if (currentMissionLvl == 1) {
+	      	var baseEnemyCollision = base.baseEnemyCollisionCheck(enemies[i]);
+
+	      	if (baseEnemyCollision == 't' || baseEnemyCollision == 'b' || baseEnemyCollision =='l' || baseEnemyCollision == 'r') {
+	      		enemies[i].sY = 288;
+	      		base.health--;
+	      		if (base.health < 0) {
+	      			base = null;
+	      			that.gameOverCase();
+	      		}
+	      	}
+	      }
     	}
  		}
 
@@ -268,7 +311,7 @@ function ShootEmAllGame() {
 
 	  	if (enemies[i] != undefined) {
 	      enemies[i].rotation = Math.atan2((that.player.y - enemies[i].y), (that.player.x - enemies[i].x)) - Math.PI / 2;
-	      enemies[i].draw(enemies[i].rotation);
+	      enemies[i].draw(enemies[i].rotation, base);
 	    }  
  		}
 		
@@ -284,6 +327,10 @@ function ShootEmAllGame() {
  		for (var i = 0; i < treesArray.length; i++) {
 
       treesArray[i].drawTrees();
+ 		}
+
+ 		if (currentMissionLvl == 1) {
+ 			base.drawPowerUp(); //draws base 
  		}
 
  		// draw powerUps and health bar at the last
@@ -306,10 +353,16 @@ function ShootEmAllGame() {
  			gameUI.writeText('Bullets: '+ bulletCount, 20, 110, 60);
  		}
 
- 		gameUI.writeText('Score: '+ gameScore, 20, WIDTH / 2 - 50, 50);
- 		oldHighScore = Math.max(gameScore, oldHighScore)
- 		gameUI.writeText('High Score: '+ oldHighScore, 20, WIDTH - 150, 50);
+ 		gameUI.writeText('Score: ' + gameScore, 20, WIDTH / 2 - 50, 50);
 
+ 		if (currentMissionLvl == 1) {
+ 			survivalTimeLeft = survivalTime - Math.floor(gameTime / 60);
+ 			gameUI.writeText('Base Health Left: ' + base.health, 30, WIDTH / 2 - 150, 80);
+ 			gameUI.writeText('Time Left: ' + survivalTimeLeft, 20, WIDTH / 2 - 70, 120);
+ 		}
+
+ 		oldHighScore = Math.max(gameScore, oldHighScore)
+ 		gameUI.writeText('High Score: ' + oldHighScore, 20, WIDTH - 150, 50);
 	}
 
 	// get Mouse position
@@ -323,7 +376,6 @@ function ShootEmAllGame() {
         x: mouseX,
         y: mouseY
     };
-
 	}
 
 	// click event listener for shooting bullets
@@ -584,8 +636,8 @@ function ShootEmAllGame() {
 					this.enemy.initialVelocity = maxEnemies * 0.05;
 					this.enemy.health = 2000 * enemyBossCount;
 					this.enemy.boss = true;
-					this.enemy.width = 96 * enemyBossCount;
-					this.enemy.height = 96 * enemyBossCount;
+					this.enemy.width = 144 * enemyBossCount * 3 / 2;
+					this.enemy.height = this.enemy.width;
 					
 				}
 				
@@ -595,6 +647,8 @@ function ShootEmAllGame() {
 					this.enemy.x += 1000;
 					this.enemy.y += 1000;
 				}
+				this.enemy.width = Utils.getRandom(50, 96);
+				this.enemy.height = this.enemy.width; 
 				this.enemy.index = enemyIndex;
 				enemies[enemyIndex] = this.enemy;
 				enemyIndex++;
@@ -629,6 +683,7 @@ function ShootEmAllGame() {
 				enemyIndex = 0;
 				maxEnemies = 20;
 				enemyBoss = null;
+				enemyBossCount = 0;
 
 				gameTime = 0;
 				collision = 0;
@@ -643,7 +698,7 @@ function ShootEmAllGame() {
 				powerUp = null;
 				powerUpState = false;
 
-				that.init(currentPlayerName);
+				that.init(currentPlayerName, currentMissionLvl);
 			}
 		});
 	}

@@ -26,10 +26,19 @@ canvas {
   left: 46%;
   border: 2px solid black;
 }
+.start-mission-btn {
+  width: 200px;
+  height: 50px;
+  color: #ffffff;
+  background: url('../images/start-mission-btn.png');
+  position: absolute;
+  top: 80%;
+  left: 10%;
+  border: 2px solid black;
+}
 .select-player-btn-anuj {
   position: absolute;
-  width: 300px;
-  height: 50px;
+  max-width: 20%;
   background: teal;
   color: white;
   font-size: 20px;
@@ -40,10 +49,12 @@ canvas {
   border-radius: 20px;
   padding: 5px;
 }
+.select-player-btn-anuj:hover {
+  cursor: pointer;
+}
 .select-player-btn-shyam {
   position: absolute;
-  width: 300px;
-  height: 50px;
+  max-width: 20%;
   background: silver;
   color: black;
   font-size: 20px;
@@ -54,10 +65,12 @@ canvas {
   border-radius: 20px;
   padding: 5px;
 }
+.select-player-btn-shyam:hover {
+  cursor: pointer;
+}
 .select-player-btn-hari {
   position: absolute;
-  width: 300px;
-  height: 50px;
+  max-width: 20%;
   background: pink;
   color: green;
   font-size: 20px;
@@ -68,12 +81,14 @@ canvas {
   border-radius: 20px;
   padding: 5px;
 }
+.select-player-btn-hari:hover {
+  cursor: pointer;
+}
 .instruction-container {
   position: absolute;
   top: 25%;
   left: 8%;
-  width: 400px;
-  height: 400px;
+  width: 25%;
   font-size: 30px;
   color: grey;
 }

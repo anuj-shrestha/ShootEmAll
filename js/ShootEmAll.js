@@ -10,9 +10,16 @@ var ShootEmAll = (function() {
 
 		var mainWrapper;
 		var startScreen;
+		var instructionContainer;
 		var playerName;
+		var missionLvl = 0;
 
 		var startGameButton;
+		var startMissionButton;
+		var selectPlayerButtonAnuj;
+		var selectPlayerButtonShyam;
+		var selectPlayerButtonHari;
+
 
 		//instances
 		var shootEmAllGame;
@@ -28,11 +35,10 @@ var ShootEmAll = (function() {
 			startScreen = view.create('div');
 			instructionContainer = view.create('div');
 			startGameButton = view.create('div');
+			startMissionButton = view.create('div');
 			selectPlayerButtonAnuj = view.create('div');
 			selectPlayerButtonShyam = view.create('div');
 			selectPlayerButtonHari = view.create('div');
-
-
 
 			startScreen.style.width = window.innerWidth + 'px';
 			startScreen.style.height = window.innerHeight + 'px';
@@ -41,6 +47,7 @@ var ShootEmAll = (function() {
 			view.setHTML(instructionContainer, 'CONTROLS: A, W, S, D to move player. Mouse Click to shoot')
 			view.addClass(startScreen, 'starting-screen');
 			view.addClass(startGameButton, 'start-game-btn');
+			view.addClass(startMissionButton, 'start-mission-btn');
 			view.addClass(selectPlayerButtonAnuj, 'select-player-btn-anuj');
 			view.setHTML(selectPlayerButtonAnuj, 'Anuj Shrestha, The Killer');
 			view.addClass(selectPlayerButtonShyam, 'select-player-btn-shyam');
@@ -48,8 +55,8 @@ var ShootEmAll = (function() {
 			view.addClass(selectPlayerButtonHari, 'select-player-btn-hari');
 			view.setHTML(selectPlayerButtonHari, 'Harke Hari, The Saviour');
 
-
 			view.append(startScreen, startGameButton);
+			view.append(startScreen, startMissionButton);
 			view.append(startScreen, selectPlayerButtonAnuj);
 			view.append(startScreen, selectPlayerButtonShyam);
 			view.append(startScreen, selectPlayerButtonHari);
@@ -96,11 +103,20 @@ var ShootEmAll = (function() {
 
 			startGameButton.onclick = function() {
 
-				shootEmAllGame.init(playerName); // initiate game
+				shootEmAllGame.init(playerName, missionLvl); // initiate game
+
+				that.hideMainMenu();
+			}
+
+			startMissionButton.onclick = function() {
+
+				missionLvl = 1;
+				shootEmAllGame.init(playerName, missionLvl); // initiate game
 
 				that.hideMainMenu();
 			}
 		}
+
 		this.hideMainMenu = function() {
 			view.style(startScreen, {display: 'none' });
 		}

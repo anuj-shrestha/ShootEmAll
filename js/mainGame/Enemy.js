@@ -14,6 +14,9 @@ function Enemy() {
 	var letterW = 87;
 	var letterS = 83;
 
+	var baseDistance;
+	var playerDistance;
+
 	this.x;
 	this.y;
 	this.initialVelocity = 1.5;
@@ -41,7 +44,11 @@ function Enemy() {
 
 	var that = this;
 
-	this.draw = function(rotation) {
+	this.draw = function(rotation, base) {
+
+		if (baseDistance < playerDistance) {
+			rotation = Math.atan2((base.y - that.y), (base.x - that.x)) - Math.PI / 2;
+		}
 
 		if (that.time % 8 === 0 || that.time % 8 === 0){
 			that.frame++;
@@ -89,12 +96,23 @@ function Enemy() {
 
 	}
 	
-	this.update = function(playerX, playerY, bgX, bgY, keyState) {
+	this.update = function(playerX, playerY, player, base, keyState) {
 
 		that.time++;
 
-		that.destinationX = playerX - that.x + 0.1;
-		that.destinationY = playerY - that.y + 0.1;
+		if (base != null) {
+			baseDistance = Utils.getDistance(that, base);
+			playerDistance = Utils.getDistance(that, player)
+		}
+		if (baseDistance < playerDistance) {
+			that.destinationX = base.x - that.x + 0.1;
+			that.destinationY = base.y - that.y + 0.1;
+		}
+		else {
+			that.destinationX = playerX - that.x + 0.1;
+			that.destinationY = playerY - that.y + 0.1;
+		}
+		
 		
 		var max = Math.max(Math.abs(that.destinationX), Math.abs(that.destinationY));
 		var xIncrement = that.destinationX / max;
