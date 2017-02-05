@@ -1,5 +1,6 @@
 function Elements() {
   var gameUI = GameUI.getInstance();
+  var ctx = gameUI.getContext();
 
   var element = new Image();
   element.src = 'images/walls.png';
@@ -28,6 +29,7 @@ function Elements() {
   this.sWidth;
   this.sHeight;
   this.health = 1000;
+  this.rotation = 0;
 
   var that = this;
 
@@ -223,6 +225,19 @@ function Elements() {
     that.height = 150;
   }
 
+  this.hostage = function() {
+
+    that.type = 24;
+    that.x = 0;
+    that.y = 0;
+    that.sX = 0;
+    that.sY = 0;
+    that.sWidth = 80;
+    that.sHeight = 80;
+    that.width = 230;
+    that.height = 180;
+  }
+
   this.update = function(keyState) {
 
     if (keyState[letterA]){
@@ -272,6 +287,14 @@ function Elements() {
 
   this.drawTrees = function() {
     gameUI.draw(treeImage, that.sX, that.sY, that.width, that.height, that.x, that.y, that.width, that.height);
+  }
+
+  this.drawBase = function() {
+    ctx.save();
+    ctx.translate(that.x + that.width/2, that.y + that.height/2);
+    ctx.rotate(that.rotation);
+    ctx.drawImage(powerUpImage, that.sX, that.sY, that.sWidth, that.sWidth, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+    ctx.restore();
   }
 
   this.baseEnemyCollisionCheck = function(collider) {

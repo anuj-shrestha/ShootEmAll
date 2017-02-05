@@ -24,6 +24,7 @@ function Bullet() {
 	this.yIncrement;
 
 	this.collisionState = false;
+	this.butlletFromBase = false;
 
 	var that = this;
 

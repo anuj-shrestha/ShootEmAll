@@ -32,12 +32,12 @@ function ShootEmAllGame() {
 	var currentPlayerName;
 	var currentMissionLvl;
 	var survivalTime = 300;
-	var survivalTimeLeft = 300;
+	var survivalTimeLeft = survivalTime;
 
 	var enemies = [];
 	var maxEnemies = 20;
 	var enemyIndex = 0;
-	var enemyBoss = null;
+	var enemyBoss = undefined;
 	var enemyBossCount = 0;
 	var enemyLeft = maxEnemies;
 
@@ -98,7 +98,7 @@ function ShootEmAllGame() {
 			this.player = new Player();
 			this.player.height = 72;
 			this.player.width = 72;
-			this.player.x = WIDTH / 2 - that.player.height;
+			this.player.x = WIDTH / 2 - that.player.height - 100;
 			this.player.y = HEIGHT / 2 - that.player.width;
 
 			if (currentPlayerName == 'anuj') {
@@ -135,7 +135,8 @@ function ShootEmAllGame() {
 				this.enemy = new Enemy();
 				this.enemy.x = Utils.getRandom(-2000, 4000);
 				this.enemy.y = Utils.getRandom(-1000 , 2000);
-				if (Math.abs(this.enemy.x - this.player.x) < 500 && Math.abs(this.enemy.y - this.player.y) < 500) {
+				if (Math.abs(this.enemy.x - this.player.x) < 500 && 
+					Math.abs(this.enemy.y - this.player.y) < 500) {
 					this.enemy.x += 1000;
 					this.enemy.y += 1000;
 				}
@@ -196,7 +197,8 @@ function ShootEmAllGame() {
 				if (mouseState === 1 && bulletCount > 0) {
 					var tempTime = gameTime;
 					var bullet = new Bullet();
-					bullet.init(that.player.x, that.player.y, gameTime, mouse.x, mouse.y, that.player.playerRotation);
+					bullet.init(that.player.x, that.player.y, gameTime, mouse.x, mouse.y, 
+						that.player.playerRotation);
 					bullets.push(bullet);
 					bulletCount--;
 					gameSound.play('machineGun');
@@ -204,6 +206,10 @@ function ShootEmAllGame() {
 
 				if (mouseState === 0) {
 					gameSound.stopMachineGunSound();
+				}
+
+				if (bulletCount <= 0){
+					powerUpState = false;
 				}
 			}
 
@@ -230,7 +236,11 @@ function ShootEmAllGame() {
 		that.player.update(keyState);
 		that.walls.playerCollisionWithWallCheck(that.player);
 		if (currentMissionLvl == 1) {
-			base.baseEnemyCollisionCheck(that.player);
+			var playerBaseCollision = base.baseEnemyCollisionCheck(that.player);
+
+			if (playerBaseCollision) {
+				bulletCount++;
+			}
 		}
 		
 		that.background.update(keyState);
@@ -250,6 +260,15 @@ function ShootEmAllGame() {
       if (indexCollided) {
       	that.deleteBullet(bullets[i], i); 
       }
+
+      if (currentMissionLvl == 1 && bullets[i] != undefined && !bullets[i].bulletFromBase) {
+	      var collisionWithBaseCase = Utils.getAABBIntersect(bullets[i].x, bullets[i].y, 
+	      	bullets[i].width, bullets[i].height, base.x, base.y, base.width, base.height);
+
+	      if (collisionWithBaseCase) {
+	      	that.deleteBullet(bullets[i], i); 
+	      }
+    	}
  		}
  		
  		if (currentMissionLvl == 1) {
@@ -266,12 +285,19 @@ function ShootEmAllGame() {
 	      enemies[i].update(that.player.x, that.player.y, that.player, null, keyState);
 	      }
 
-	      that.walls.wallEnemyCollisionCheck(enemies[i]);
+	      if (enemyBoss != enemies[i]) {
+	      	that.walls.wallEnemyCollisionCheck(enemies[i]);
+	      }
+	      else {
+	      	enemies[i].velX = enemies[i].initialVelocity;
+	      	enemies[i].velY = enemies[i].initialVelocity;	
+	      }
 
 	      if (currentMissionLvl == 1) {
 	      	var baseEnemyCollision = base.baseEnemyCollisionCheck(enemies[i]);
 
-	      	if (baseEnemyCollision == 't' || baseEnemyCollision == 'b' || baseEnemyCollision =='l' || baseEnemyCollision == 'r') {
+	      	if (baseEnemyCollision == 't' || baseEnemyCollision == 'b' || 
+	      		baseEnemyCollision =='l' || baseEnemyCollision == 'r') {
 	      		enemies[i].sY = 288;
 	      		base.health--;
 	      		if (base.health < 0) {
@@ -294,6 +320,8 @@ function ShootEmAllGame() {
 	}
 
 	function draw() {
+
+		var targetEnemyForBase = undefined;
 		
 		gameUI.clear(0, 0, WIDTH, HEIGHT);
 
@@ -310,9 +338,29 @@ function ShootEmAllGame() {
 	  for (var i = 0; i < enemyIndex; i++) {
 
 	  	if (enemies[i] != undefined) {
-	      enemies[i].rotation = Math.atan2((that.player.y - enemies[i].y), (that.player.x - enemies[i].x)) - Math.PI / 2;
+	      enemies[i].rotation = Math.atan2((that.player.y - enemies[i].y), 
+	      	(that.player.x - enemies[i].x)) - Math.PI / 2;
 	      enemies[i].draw(enemies[i].rotation, base);
+	    }
+
+	    if (enemies[i] != undefined && currentMissionLvl == 1) {
+
+	    	if (targetEnemyForBase == undefined && enemies[i].baseDistance < 300) {
+	    		targetEnemyForBase = enemies[i];
+	    	}
 	    }  
+ 		}
+
+ 		if (targetEnemyForBase != undefined && targetEnemyForBase.baseDistance < 300) {
+ 			base.rotation = Math.atan2((base.y + base.height / 2 - targetEnemyForBase.y), 
+ 				(base.x + base.width / 2 - targetEnemyForBase.x)) - Math.PI / 2;
+ 			var bullet = new Bullet();
+ 			bullet.bulletFromBase = true;
+ 			bullet.init(base.x + base.width / 2, base.y + base.height / 2, gameTime, 
+ 				targetEnemyForBase.x + targetEnemyForBase.width / 2, 
+ 				targetEnemyForBase.y + targetEnemyForBase.height / 2, base.rotation);
+ 			bullets.push(bullet);
+ 			gameSound.play('machineGun');
  		}
 		
 		for (var i = 0; i < bullets.length; i++) {
@@ -321,7 +369,8 @@ function ShootEmAllGame() {
  		}
 
  		// dotted line showing gun direction
-		gameUI.drawDottedPath(that.player.x + that.player.width / 2, that.player.y + that.player.height / 2, mouse.x,  mouse.y); // Draw it
+		gameUI.drawDottedPath(that.player.x + that.player.width / 2, 
+			that.player.y + that.player.height / 2, mouse.x,  mouse.y);
 
 		// draw trees
  		for (var i = 0; i < treesArray.length; i++) {
@@ -330,7 +379,7 @@ function ShootEmAllGame() {
  		}
 
  		if (currentMissionLvl == 1) {
- 			base.drawPowerUp(); //draws base 
+ 			base.drawBase(); //draws base 
  		}
 
  		// draw powerUps and health bar at the last
@@ -359,6 +408,9 @@ function ShootEmAllGame() {
  			survivalTimeLeft = survivalTime - Math.floor(gameTime / 60);
  			gameUI.writeText('Base Health Left: ' + base.health, 30, WIDTH / 2 - 150, 80);
  			gameUI.writeText('Time Left: ' + survivalTimeLeft, 20, WIDTH / 2 - 70, 120);
+ 			if (survivalTimeLeft <= 0) {
+ 				that.missionCompleteCase();
+ 			}	
  		}
 
  		oldHighScore = Math.max(gameScore, oldHighScore)
@@ -381,10 +433,13 @@ function ShootEmAllGame() {
 	// click event listener for shooting bullets
 	document.addEventListener('click', function(evt) {
 
-		var bullet = new Bullet();
-		bullet.init(that.player.x, that.player.y, gameTime, mouse.x, mouse.y, that.player.playerRotation);
-		bullets.push(bullet);
-		gameSound.play('bullet');
+		if (powerUpState == false) {
+			var bullet = new Bullet();
+			bullet.init(that.player.x, that.player.y, gameTime, mouse.x, mouse.y, 
+				that.player.playerRotation);
+			bullets.push(bullet);
+			gameSound.play('bullet');
+		}
 	});
 
 	document.addEventListener('mousedown', function(evt) {
@@ -419,7 +474,8 @@ function ShootEmAllGame() {
 	  for (var i = 0; i < touches.length; i++) {
 
 	   	var bullet = new Bullet();
-			bullet.init(that.player.x, that.player.y, gameTime, touches[i].pageX, touches[i].pageY, that.player.playerRotation);
+			bullet.init(that.player.x, that.player.y, gameTime, touches[i].pageX, 
+				touches[i].pageY, that.player.playerRotation);
 			bullets.push(bullet);
 			gameSound.play('bullet');
 			targetX = touches[i].pageX - that.player.centerX;
@@ -478,7 +534,8 @@ function ShootEmAllGame() {
 		      	bullets.splice(j, 1);
 		      }
 
-		      var collision = Utils.getAABBIntersect(bulletFired.x, bulletFired.y, bulletFired.width, bulletFired.height, 
+		      var collision = Utils.getAABBIntersect(bulletFired.x, bulletFired.y, 
+		      	bulletFired.width, bulletFired.height, 
 		      	enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
 
 		      if (collision) {
@@ -486,7 +543,6 @@ function ShootEmAllGame() {
 		      	that.killEnemy(enemyAttacking, enemyAttacking.index);
 		      	enemyAttacking.velX = -0.5;
 		      	enemyAttacking.velY = -0.5;
-
 		      }
 	    	}
 	    }
@@ -502,7 +558,7 @@ function ShootEmAllGame() {
 		element.sY = 120;
 
 		if (tempTimer % 5 === 0) {
-			gameSound.play('bulletHit');
+			// gameSound.play('bulletHit');
 			element.frame++;
 
 			if (element.frame >= 3) {
@@ -523,13 +579,13 @@ function ShootEmAllGame() {
 	that.killEnemy = function(element, index) {
 
 		if (element.health < 0){
-			element = null;
-
-			if (enemies[index] == enemyBoss) {
-				enemyBoss = null;
-			}
-			delete enemies[index];
 			
+
+			if (enemyBossCount > 0 && element == enemyBoss) {
+				enemyBoss = undefined;
+			}
+			element = null;
+			delete enemies[index];
 			gameSound.play('killEnemy');
 			gameScore++;
 		}
@@ -547,7 +603,8 @@ function ShootEmAllGame() {
 
 			if (enemies[i] != undefined) {
 				var enemyAttacking = enemies[i];					
-	      var collision = Utils.getAABBIntersect(that.player.x, that.player.y, that.player.width, that.player.height,
+	      var collision = Utils.getAABBIntersect(that.player.x, that.player.y, 
+	      	that.player.width, that.player.height,
 	       enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
 	      var tempVel = enemyAttacking.velX;
 	      collisionTime = 0;
@@ -580,7 +637,8 @@ function ShootEmAllGame() {
 			if (enemies[i] != undefined) {
 
 				var enemyAttacking = enemies[i];					
-		    var collision = Utils.getAABBIntersect(that.player.x, that.player.y, that.player.width, that.player.height,
+		    var collision = Utils.getAABBIntersect(that.player.x, that.player.y, 
+		    	that.player.width, that.player.height,
 		    	enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
 	  	}
 	  }
@@ -588,7 +646,8 @@ function ShootEmAllGame() {
 
 	that.checkPlayerPowerUpCollision = function() {
 
-		var collision = Utils.getAABBIntersect(that.player.x, that.player.y, that.player.width, that.player.height,
+		var collision = Utils.getAABBIntersect(that.player.x, that.player.y, 
+			that.player.width, that.player.height,
 			powerUp.x, powerUp.y, powerUp.width, powerUp.height);
 					
 		if (collision && powerUp.type == 18) { // type 18 is gunpowerup
@@ -629,16 +688,18 @@ function ShootEmAllGame() {
 
 				this.enemy = new Enemy();
 				this.enemy.initialVelocity = maxEnemies * 0.02;
+				this.enemy.width = Utils.getRandom(60, 96);
+				this.enemy.height = this.enemy.width; 
 		
-				if (gameScore >= 10 && enemyBoss == null){
+				if (gameScore >= 10 && enemyBoss == undefined){
 					enemyBossCount++;
 					enemyBoss = this.enemy;
 					this.enemy.initialVelocity = maxEnemies * 0.05;
 					this.enemy.health = 2000 * enemyBossCount;
 					this.enemy.boss = true;
-					this.enemy.width = 144 * enemyBossCount * 3 / 2;
+					this.enemy.width = 96 + enemyBossCount * 48;
 					this.enemy.height = this.enemy.width;
-					
+					console.log('enemyboss and width', enemyBossCount, this.enemy.width);
 				}
 				
 				this.enemy.x = Utils.getRandom(-2000, 4000);
@@ -647,13 +708,24 @@ function ShootEmAllGame() {
 					this.enemy.x += 1000;
 					this.enemy.y += 1000;
 				}
-				this.enemy.width = Utils.getRandom(50, 96);
-				this.enemy.height = this.enemy.width; 
+				
 				this.enemy.index = enemyIndex;
 				enemies[enemyIndex] = this.enemy;
 				enemyIndex++;
 			}
 		}
+	}
+
+	that.missionCompleteCase = function() {
+
+		gameSound.play('powerUpSound');
+		window.cancelAnimationFrame(requestAnimation);
+		stopped = true;
+		gameSound.stopGameSong();
+		localStorage.setItem('shootEmAllHighScore', oldHighScore);
+		gameUI.writeText('Mission Complete !!!', 120, WIDTH/2 - 420, HEIGHT / 2, 'orange');
+		gameUI.writeText('Press Space To Play Next Mission', 60, WIDTH/2 - 400, HEIGHT - 80, 'orange');
+		that.restartGame();
 	}
 
 	that.gameOverCase = function() {
@@ -668,7 +740,11 @@ function ShootEmAllGame() {
 		gameUI.writeText('Game Over !!!', 120, WIDTH/2 - 280, HEIGHT / 2, 'orange');
   	gameUI.writeText('Press Space To Play Again', 60, WIDTH/2 - 300, HEIGHT - 100, 'orange');
 		// that.player = null;
-			
+		that.restartGame();	
+	}
+
+	that.restartGame = function() {
+
 		document.addEventListener('keypress', function(evt) {
 
 			if (evt.code == "Space" && stopped == true) { 
@@ -682,7 +758,7 @@ function ShootEmAllGame() {
 				enemies = [];
 				enemyIndex = 0;
 				maxEnemies = 20;
-				enemyBoss = null;
+				enemyBoss = undefined;
 				enemyBossCount = 0;
 
 				gameTime = 0;

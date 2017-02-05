@@ -47,7 +47,7 @@ canvas {
   left: 77%;
   border: 1px solid black;
   border-radius: 20px;
-  padding: 5px;
+  padding: 10px 20px;
 }
 .select-player-btn-anuj:hover {
   cursor: pointer;
@@ -63,7 +63,7 @@ canvas {
   left: 50%;
   border: 1px solid black;
   border-radius: 20px;
-  padding: 5px;
+  padding: 10px 20px;
 }
 .select-player-btn-shyam:hover {
   cursor: pointer;
@@ -79,7 +79,7 @@ canvas {
   left: 26%;
   border: 1px solid black;
   border-radius: 20px;
-  padding: 5px;
+  padding: 10px 20px;
 }
 .select-player-btn-hari:hover {
   cursor: pointer;

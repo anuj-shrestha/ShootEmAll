@@ -14,7 +14,6 @@ function Enemy() {
 	var letterW = 87;
 	var letterS = 83;
 
-	var baseDistance;
 	var playerDistance;
 
 	this.x;
@@ -41,12 +40,13 @@ function Enemy() {
 
 	this.frame = 0;
 	this.rotation;
+	this.baseDistance;
 
 	var that = this;
 
 	this.draw = function(rotation, base) {
 
-		if (baseDistance < playerDistance) {
+		if (that.baseDistance < playerDistance) {
 			rotation = Math.atan2((base.y - that.y), (base.x - that.x)) - Math.PI / 2;
 		}
 
@@ -101,10 +101,10 @@ function Enemy() {
 		that.time++;
 
 		if (base != null) {
-			baseDistance = Utils.getDistance(that, base);
+			that.baseDistance = Utils.getDistance(that, base);
 			playerDistance = Utils.getDistance(that, player)
 		}
-		if (baseDistance < playerDistance) {
+		if (that.baseDistance < playerDistance) {
 			that.destinationX = base.x - that.x + 0.1;
 			that.destinationY = base.y - that.y + 0.1;
 		}
@@ -141,11 +141,5 @@ function Enemy() {
 	      that.y -= 3;
 
 	    }
-	    else{
-
-	    }
-
-		// that.x = Math.max(Math.min(that.x, gameUI.getWidth() - that.width), 0);
-		// that.y = Math.max(Math.min(that.y, gameUI.getHeight() - that.height), 0);
 	}
 }
