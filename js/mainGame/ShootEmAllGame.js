@@ -32,7 +32,7 @@ function ShootEmAllGame() {
 
 	var currentPlayerName;
 	var currentMissionLvl;
-	var survivalTime = 120;
+	var survivalTime = 90;
 	var survivalTimeLeft = survivalTime;
 	var base = null;
 	var hostage =  null;
