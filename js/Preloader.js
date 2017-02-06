@@ -19,19 +19,16 @@ function Preloader() {
 		view.appendToBody(loadingPercentage);
 
 		imageSource = {
-			1: 'images/plain-walls.png',
-			2: 'images/game-plain-bg.jpg',
-			3: 'images/gui.png',
-			4: 'images/power-up.png',
-			5: 'images/player-enemy-sprites.png',
-			6: 'images/trees.png',
-			7: 'images/walls.png',
-			8: 'images/enemy.png',
-			9: 'images/game-bg.jpg',
-			10: 'images/starting-screen.png',
-			11: 'images/start-btn.png',
-			12: 'images/friend-attacking.png',
-			13: 'images/friend-walking.png'
+			1: 'images/game-plain-bg.jpg',
+			2: 'images/gui.png',
+			3: 'images/power-up.png',
+			4: 'images/player-enemy-sprites.png',
+			5: 'images/trees.png',
+			6: 'images/walls.png',
+			7: 'images/enemy.png',
+			8: 'images/starting-screen.png',
+			9: 'images/start-btn.png',
+			10: 'images/friend-walking.png'
 		}
 
 		that.loadImages(imageSource);

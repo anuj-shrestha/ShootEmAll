@@ -225,44 +225,39 @@ function Elements() {
     that.height = 150;
   }
 
-  this.hostage = function() {
+  this.resqueZone = function() {
 
     that.type = 24;
-    that.x = 0;
-    that.y = 0;
-    that.sX = 0;
+    that.x = 400;
+    that.y = 200;
+    that.sX = 400;
     that.sY = 0;
-    that.sWidth = 80;
-    that.sHeight = 80;
-    that.width = 230;
-    that.height = 180;
+    that.sWidth = 100;
+    that.sHeight = 100;
+    that.width = 150;
+    that.height = 150;
   }
 
   this.update = function(keyState) {
 
     if (keyState[letterA]){
       that.x += 3;
-      that.xIncrement = 1
     }
 
     else if (keyState[letterD]){
       that.x -= 3;
-      that.xIncrement = -1;
     }
 
     else if (keyState[letterW]){
       that.y += 3;
-      that.yIncrement = 1;
     }
 
     else if (keyState[letterS]){
       that.y -= 3;
-      that.yIncrement = -1;
     }
 
     else{
       that.xIncrement = 0;
-      that.yIncrement = 0;
     }
   }
 
@@ -297,17 +292,9 @@ function Elements() {
     ctx.restore();
   }
 
-  this.baseEnemyCollisionCheck = function(collider) {
+  this.elementCollisionCheck = function(collider) {
 
     var collisionDirection = Utils.getCollisionDirection(collider, that);
-
-    if (collisionDirection == 'l' || collisionDirection == 'r') {
-      collider.velX = 0;
-    }
-
-    else if (collisionDirection == 't' || collisionDirection == 'b') {
-      collider.velY = 0;
-    }
 
     return collisionDirection;
   }

@@ -4,6 +4,7 @@ function ShootEmAllGame() {
 	// constants are defined here
 	var gameUI = GameUI.getInstance();
 	var canvas = gameUI.getCanvas();
+	var ctx = gameUI.getContext();
 	
 	var WIDTH = window.innerWidth;
 	var HEIGHT = window.innerHeight;
@@ -31,8 +32,12 @@ function ShootEmAllGame() {
 
 	var currentPlayerName;
 	var currentMissionLvl;
-	var survivalTime = 300;
+	var survivalTime = 120;
 	var survivalTimeLeft = survivalTime;
+	var base = null;
+	var hostage =  null;
+	var hostageTime = 120;
+	var resqueZone;
 
 	var enemies = [];
 	var maxEnemies = 20;
@@ -125,7 +130,17 @@ function ShootEmAllGame() {
 			base.getBase();
 			base.x = WIDTH / 2 - base.width / 2;
 			base.y = HEIGHT / 2 - base.height / 2;
-			maxEnemies = 30;
+			maxEnemies = 40;
+		}
+		else if (currentMissionLvl == 2) {
+			hostage = new Enemy();
+			hostage.health = 500;
+			hostage.hostage(that.player);
+			resqueZone = new Elements();
+			resqueZone.resqueZone();
+			resqueZone.x = WIDTH / 2 - resqueZone.width;
+			resqueZone.y = HEIGHT / 2 - resqueZone.height / 2;
+			maxEnemies = 60;
 		}
 
 		if (enemies.length == 0) {
@@ -134,7 +149,7 @@ function ShootEmAllGame() {
 				
 				this.enemy = new Enemy();
 				this.enemy.x = Utils.getRandom(-2000, 4000);
-				this.enemy.y = Utils.getRandom(-1000 , 2000);
+				this.enemy.y = Utils.getRandom(-1000, 2000);
 				if (Math.abs(this.enemy.x - this.player.x) < 500 && 
 					Math.abs(this.enemy.y - this.player.y) < 500) {
 					this.enemy.x += 1000;
@@ -172,8 +187,6 @@ function ShootEmAllGame() {
 			treesArray.push(tree);
 		}
 		
-	
-
 		var startGameLoop = function() {
 
 			gameTime++;
@@ -219,10 +232,8 @@ function ShootEmAllGame() {
 			that.checkPlayerEnemyCollision();
 			that.resetEnemyProperties();
 
-			if (currentMissionLvl == 0 || currentMissionLvl == 1) {
-				that.generateEnemies();
-			}
-
+			that.generateEnemies();
+			
 			if (!stopped) {
 				requestAnimation = window.requestAnimationFrame(startGameLoop, canvas);
 			}
@@ -236,10 +247,19 @@ function ShootEmAllGame() {
 		that.player.update(keyState);
 		that.walls.playerCollisionWithWallCheck(that.player);
 		if (currentMissionLvl == 1) {
-			var playerBaseCollision = base.baseEnemyCollisionCheck(that.player);
+			var playerBaseCollision = base.elementCollisionCheck(that.player);
 
 			if (playerBaseCollision) {
 				bulletCount++;
+			}
+		}
+		else if (currentMissionLvl == 2) {
+			that.walls.playerCollisionWithWallCheck(hostage);
+			var playerHostageCollision = Utils.getCollisionDirection(that.player, hostage);
+			if (playerHostageCollision != null) {
+				hostage.found = true;
+				hostage.velX = 1.5;
+				hostage.velY = 1.5;
 			}
 		}
 		
@@ -255,9 +275,9 @@ function ShootEmAllGame() {
 
       bullets[i].update();
 
-      var indexCollided = that.walls.bulletWallCollisionCheck(bullets[i]);
+      var bulletCollided = that.walls.bulletWallCollisionCheck(bullets[i]);
 
-      if (indexCollided) {
+      if (bulletCollided) {
       	that.deleteBullet(bullets[i], i); 
       }
 
@@ -275,38 +295,68 @@ function ShootEmAllGame() {
  			base.update(keyState);
  		}
 
+ 		else if (currentMissionLvl == 2) {
+ 			hostage.update(that.player, null, hostage, keyState);
+ 			resqueZone.update(keyState);
+ 		}
+
 		for (var i = 0; i < enemyIndex; i++) {
 
-			if (enemies[i] != undefined) {
-				if (currentMissionLvl == 1) {
-					enemies[i].update(that.player.x, that.player.y, that.player, base, keyState);
-				}
-				else {
-	      enemies[i].update(that.player.x, that.player.y, that.player, null, keyState);
-	      }
+			if (enemies[i] == undefined) 
+				continue;
 
-	      if (enemyBoss != enemies[i]) {
-	      	that.walls.wallEnemyCollisionCheck(enemies[i]);
-	      }
-	      else {
-	      	enemies[i].velX = enemies[i].initialVelocity;
-	      	enemies[i].velY = enemies[i].initialVelocity;	
-	      }
+			if (currentMissionLvl == 1) {
+				enemies[i].update(that.player, base, null, keyState);
+			}
 
-	      if (currentMissionLvl == 1) {
-	      	var baseEnemyCollision = base.baseEnemyCollisionCheck(enemies[i]);
+			else if (currentMissionLvl == 2) {
+      	enemies[i].update(that.player, null, hostage, keyState);
+      }
 
-	      	if (baseEnemyCollision == 't' || baseEnemyCollision == 'b' || 
-	      		baseEnemyCollision =='l' || baseEnemyCollision == 'r') {
-	      		enemies[i].sY = 288;
-	      		base.health--;
-	      		if (base.health < 0) {
-	      			base = null;
-	      			that.gameOverCase();
-	      		}
-	      	}
-	      }
-    	}
+      else {
+      	enemies[i].update(that.player, null, null, keyState);
+      }
+
+      if (enemyBoss != enemies[i]) {
+      	that.walls.wallEnemyCollisionCheck(enemies[i]);
+      }
+
+      else {
+      	enemies[i].velX = enemies[i].initialVelocity;
+      	enemies[i].velY = enemies[i].initialVelocity;	
+      }
+
+      if (currentMissionLvl == 1) {
+      	var baseEnemyCollision = base.elementCollisionCheck(enemies[i]);
+
+      	if (baseEnemyCollision == 't' || baseEnemyCollision == 'b' || 
+      		baseEnemyCollision =='l' || baseEnemyCollision == 'r') {
+      		enemies[i].sY = 288;
+      		base.health--;
+      		if (base.health < 0) {
+      			base = null;
+      			that.gameOverCase();
+      		}
+      	}
+      }
+
+      else if (currentMissionLvl == 2 && hostage.found) {
+      	var hostageEnemyCollision = hostage.elementCollisionCheck(enemies[i]);
+
+      	if (hostageEnemyCollision == 't' || hostageEnemyCollision == 'b' || 
+      		hostageEnemyCollision =='l' || hostageEnemyCollision == 'r') {
+      		enemies[i].sY = 288;
+      		hostage.health--;
+      		hostage.sY = 290 * 2;
+      		
+      		if (hostage.health < 0) {
+      			hostage = null;
+      			that.gameOverCase();
+      		}
+      		that.killEnemy(enemies[i], enemies[i].index);
+      	}
+      }
+
  		}
 
  		if (powerUp != null) {
@@ -322,11 +372,21 @@ function ShootEmAllGame() {
 	function draw() {
 
 		var targetEnemyForBase = undefined;
+		var targetEnemyForHostage = undefined;
 		
 		gameUI.clear(0, 0, WIDTH, HEIGHT);
 
 		that.background.draw();
 		that.walls.draw();
+
+		if (currentMissionLvl == 1 && base != null) {
+			base.drawBase(); //draws base 
+		}
+
+		else if (currentMissionLvl == 2) {
+			hostage.drawHostage(hostage.rotation);
+			resqueZone.drawPowerUp(); // uses drawPowerUp function to draw resquezone as well;
+		}
 
 		if (mouse.x != 0 && mouse.y != 0) {
 			targetX = mouse.x - that.player.centerX;
@@ -340,7 +400,7 @@ function ShootEmAllGame() {
 	  	if (enemies[i] != undefined) {
 	      enemies[i].rotation = Math.atan2((that.player.y - enemies[i].y), 
 	      	(that.player.x - enemies[i].x)) - Math.PI / 2;
-	      enemies[i].draw(enemies[i].rotation, base);
+	      enemies[i].draw(enemies[i].rotation, base, hostage);
 	    }
 
 	    if (enemies[i] != undefined && currentMissionLvl == 1) {
@@ -348,7 +408,14 @@ function ShootEmAllGame() {
 	    	if (targetEnemyForBase == undefined && enemies[i].baseDistance < 300) {
 	    		targetEnemyForBase = enemies[i];
 	    	}
-	    }  
+	    }
+
+	    else if (enemies[i] != undefined && currentMissionLvl == 2) {
+
+	    	if (targetEnemyForHostage == undefined && enemies[i].hostageDistance < 200) {
+	    		targetEnemyForHostage = enemies[i];
+	    	}
+	    }
  		}
 
  		if (targetEnemyForBase != undefined && targetEnemyForBase.baseDistance < 300) {
@@ -362,6 +429,11 @@ function ShootEmAllGame() {
  			bullets.push(bullet);
  			gameSound.play('machineGun');
  		}
+
+ 		else if (targetEnemyForHostage != undefined && targetEnemyForHostage.hostageDistance < 200) {
+ 			hostage.rotation = Math.atan2((hostage.y + hostage.height / 2 - targetEnemyForHostage.y), 
+ 				(hostage.x + hostage.width / 2 - targetEnemyForHostage.x)) - Math.PI / 2;
+ 		}
 		
 		for (var i = 0; i < bullets.length; i++) {
 
@@ -369,8 +441,15 @@ function ShootEmAllGame() {
  		}
 
  		// dotted line showing gun direction
-		gameUI.drawDottedPath(that.player.x + that.player.width / 2, 
+ 		if (currentMissionLvl == 2) {
+ 			gameUI.drawDottedPath(that.player.x + that.player.width / 2, 
+			that.player.y + that.player.height / 2, hostage.x,  hostage.y);
+ 		}
+ 		else {
+ 			gameUI.drawDottedPath(that.player.x + that.player.width / 2, 
 			that.player.y + that.player.height / 2, mouse.x,  mouse.y);
+ 		}
+		
 
 		// draw trees
  		for (var i = 0; i < treesArray.length; i++) {
@@ -378,9 +457,6 @@ function ShootEmAllGame() {
       treesArray[i].drawTrees();
  		}
 
- 		if (currentMissionLvl == 1) {
- 			base.drawBase(); //draws base 
- 		}
 
  		// draw powerUps and health bar at the last
  		if (powerUp != null) {
@@ -407,10 +483,28 @@ function ShootEmAllGame() {
  		if (currentMissionLvl == 1) {
  			survivalTimeLeft = survivalTime - Math.floor(gameTime / 60);
  			gameUI.writeText('Base Health Left: ' + base.health, 30, WIDTH / 2 - 150, 80);
- 			gameUI.writeText('Time Left: ' + survivalTimeLeft, 20, WIDTH / 2 - 70, 120);
+ 			gameUI.writeText('Time Left To Win: ' + survivalTimeLeft, 20, WIDTH / 2 - 90, 120);
+
  			if (survivalTimeLeft <= 0) {
  				that.missionCompleteCase();
  			}	
+ 		}
+
+ 		if (currentMissionLvl == 2) {
+ 			survivalTimeLeft = hostageTime - Math.floor(gameTime / 60);
+ 			gameUI.writeText('Hostage Health Left: ' + hostage.health, 30, WIDTH / 2 - 150, 80);
+ 			gameUI.writeText('Time Left To Lose: ' + survivalTimeLeft, 20, WIDTH / 2 - 90, 120);
+
+ 			if (survivalTimeLeft <= 0) {
+ 				that.gameOverCase();
+ 			}	
+
+ 			var hostageInRescueZone = Utils.getAABBIntersect(hostage.x, hostage.y, hostage.width, 
+ 				hostage.height, resqueZone.x, resqueZone.y, resqueZone.width, resqueZone.height);
+
+ 			if (hostageInRescueZone) {
+ 				that.missionCompleteCase();
+ 			}
  		}
 
  		oldHighScore = Math.max(gameScore, oldHighScore)
@@ -724,7 +818,8 @@ function ShootEmAllGame() {
 		gameSound.stopGameSong();
 		localStorage.setItem('shootEmAllHighScore', oldHighScore);
 		gameUI.writeText('Mission Complete !!!', 120, WIDTH/2 - 420, HEIGHT / 2, 'orange');
-		gameUI.writeText('Press Space To Play Next Mission', 60, WIDTH/2 - 400, HEIGHT - 80, 'orange');
+		gameUI.writeText('Press Space To Play Next Mission', 60, WIDTH/2 - 420, HEIGHT - 180, 'orange');
+		currentMissionLvl = 2;
 		that.restartGame();
 	}
 

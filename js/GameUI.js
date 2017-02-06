@@ -83,11 +83,11 @@ var GameUI = (function() {
 		
 		this.drawDottedPath = function(x, y, mx, my) {
 			ctx.beginPath(); 
-	    ctx.lineWidth="1";
-	    ctx.strokeStyle="grey"; // Black path
+	    ctx.lineWidth = "2";
+	    ctx.strokeStyle = "black"; // Black path
 	    ctx.setLineDash([5, 15]);
 	    ctx.moveTo(x, y);
-	    ctx.lineTo((x+mx)/2, (y+my)/2);
+	    ctx.lineTo((x + mx) * 0.5, (y + my) * 0.5);
 	    ctx.stroke(); // Draw it
 		}
 

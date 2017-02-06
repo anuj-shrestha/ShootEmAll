@@ -110,8 +110,8 @@ function Player() {
 			that.y += that.initialVelocity * that.velY;
 		}
 
-		that.x = Math.max(Math.min(that.x, gameUI.getWidth() - that.width), 0);
-		that.y = Math.max(Math.min(that.y, gameUI.getHeight() - that.height), 0);
+		that.x = Math.max(Math.min(that.x, gameUI.getWidth() - 200 - that.width), 200);
+		that.y = Math.max(Math.min(that.y, gameUI.getHeight() - 100 - that.height), 100);
 
 		that.centerX = that.x + that.width / 2;
 		that.centerY = that.y + that.height / 2;
