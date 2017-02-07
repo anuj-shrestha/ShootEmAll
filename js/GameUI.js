@@ -15,51 +15,62 @@ var GameUI = (function() {
 		var that = this;
 
 		this.setWidth = function(width) {
+
 			console.log('width set', mainWrapper);
 			canvas.width = width;
 		}
 
 		this.setHeight = function(height) {
+
 			canvas.height = height;
 		}
 
 		this.getWidth = function() {
+
 			return canvas.width;
 		}
 
 		this.getHeight = function() {
+
 			return canvas.height;
 		}
 
 		this.getCanvas = function() {
+
 			return canvas;
 		}
 		this.getContext = function() {
+
 			return ctx;
 		}
 
 		this.show = function() {
+
 			canvas.style.display = 'block';
 		}
 
 		this.hide = function() {
+
 			canvas.style.display = 'none';
 		}
 
 		this.clear = function(x, y, width, height) {
+
 			ctx.clearRect(x, y, width, height);
 		}
 
 		this.translate = function(x, y) {
+
 			ctx.translate(x, y);
 		}
 
 		this.scrollWindow = function(x, y) {
+
 			ctx.translate(x, y);
 		}
 
 		this.draw = function(image, sx, sy, sWidth, sHeight, x, y, width, height ) {
-		// ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
+		// ctx.shadowColor = "rgba(0, 0, 0, 0.25)"; // use shadow if needed, but causes heavy loading
 	  //   ctx.shadowOffsetX = 0;
 	  //   ctx.shadowOffsetY = 0;
 	  //   ctx.shadowBlur = 2;
@@ -67,13 +78,15 @@ var GameUI = (function() {
 		}
 
 		this.makeBox = function(x, y, width, height) {
+
 			ctx.rect(x, y, width, height);
 			ctx.fillStyle = 'black';
 			ctx.fill();
 		}
 
 		this.writeText = function(text, font, x, y, color) {
-			if(color===undefined) {
+
+			if(color === undefined) {
 				color = "#fff";
 			}
 			ctx.font =  font + 'px Creepster';
@@ -82,6 +95,7 @@ var GameUI = (function() {
 		}
 		
 		this.drawDottedPath = function(x, y, mx, my) {
+
 			ctx.beginPath(); 
 	    ctx.lineWidth = "2";
 	    ctx.strokeStyle = "black"; // Black path
@@ -95,6 +109,7 @@ var GameUI = (function() {
 
  	return {
  		getInstance: function(){
+ 			
  			if (instance == null) {
  				instance = new GameUI();
  			}

@@ -14,10 +14,10 @@ function Elements() {
   var treeImage = new Image();
   treeImage.src = 'images/trees.png';
 
-  var letterA = 65;
-  var letterD = 68;
-  var letterW = 87;
-  var letterS = 83;
+  var LETTER_A = 65;
+  var LETTER_D = 68;
+  var LETTER_W = 87;
+  var LETTER_S = 83;
 
   this.type;
   this.sX;
@@ -30,6 +30,7 @@ function Elements() {
   this.sHeight;
   this.health = 1000;
   this.rotation = 0;
+  this.increment = 3;
 
   var that = this;
 
@@ -240,28 +241,19 @@ function Elements() {
 
   this.update = function(keyState) {
 
-    if (keyState[letterA]){
-      that.x += 3;
-    }
-
-    else if (keyState[letterD]){
-      that.x -= 3;
-    }
-
-    else if (keyState[letterW]){
-      that.y += 3;
-    }
-
-    else if (keyState[letterS]){
-      that.y -= 3;
-    }
-
-    else{
-      that.xIncrement = 0;
-    }
+    if (keyState[LETTER_A]){
+      that.x += that.increment;
+    } else if (keyState[LETTER_D]){
+      that.x -= that.increment;
+    } else if (keyState[LETTER_W]){
+      that.y += that.increment;
+    } else if (keyState[LETTER_S]){
+      that.y -= that.increment;
+    } 
   }
 
   this.updateHealthUI = function(health) {
+
     that.y = health * 100 / 100;
     that.sY = health * 20 / 100;
     that.height = (100 - health);
@@ -269,22 +261,27 @@ function Elements() {
   }
 
   this.draw =  this.draw = function() {
+
     gameUI.draw(element, that.sX, that.sY, that.width, that.height, that.x, that.y, that.width, that.height);
   }
 
   this.drawHealthUI = function() {
+
     gameUI.draw(healthGUI, that.sX, that.sY, that.sWidth, that.sHeight, that.x, that.y, that.width, that.height)
   }
 
   this.drawPowerUp = function() {
+
     gameUI.draw(powerUpImage, that.sX, that.sY, that.sWidth, that.sHeight, that.x, that.y, that.width, that.height)
   }
 
   this.drawTrees = function() {
+
     gameUI.draw(treeImage, that.sX, that.sY, that.width, that.height, that.x, that.y, that.width, that.height);
   }
 
   this.drawBase = function() {
+
     ctx.save();
     ctx.translate(that.x + that.width/2, that.y + that.height/2);
     ctx.rotate(that.rotation);

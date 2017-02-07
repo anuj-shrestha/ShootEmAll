@@ -12,16 +12,17 @@ function Walls() {
 	var mapLevel = JSON.parse(map[1]);
 	var wallElements = [];
 
-	var letterA = 65;
-	var letterD = 68;
-	var letterW = 87;
-	var letterS = 83;
+	var LETTER_A = 65;
+	var LETTER_D = 68;
+	var LETTER_W = 87;
+	var LETTER_S = 83;
 
 	this.type;
 	this.x = 200;
 	this.y = 100;
 	this.width = 640;
 	this.height = 640;
+	this.increment = 3;
 
 	var that = this;
 
@@ -31,60 +32,60 @@ function Walls() {
 
 		  switch (mapLevel[row][column]) {
     		case 1: //verticalWall
-	    	var elements = new Elements();
-        elements.x = this.x + column * 32;
-        elements.y = this.y + row * 32;
-        elements.verticalWall();
-        wallElements.push(elements);
-      	break;
+		    	var elements = new Elements();
+	        elements.x = this.x + column * 32;
+	        elements.y = this.y + row * 32;
+	        elements.verticalWall();
+	        wallElements.push(elements);
+	      	break;
 
       	case 2: //horizontalWall
-	    	var elements = new Elements();
-        elements.x = this.x + column * 32;
-        elements.y = this.y + row * 32;
-        elements.horizontalWall();
-        wallElements.push(elements);
-      	break;
+		    	var elements = new Elements();
+	        elements.x = this.x + column * 32;
+	        elements.y = this.y + row * 32;
+	        elements.horizontalWall();
+	        wallElements.push(elements);
+	      	break;
 
       	case 8: //leftBottomCorner
-	    	var elements = new Elements();
-        elements.x = this.x + column * 32;
-        elements.y = this.y + row * 32;
-        elements.leftBottomCorner();
-        wallElements.push(elements);
-      	break;
+		    	var elements = new Elements();
+	        elements.x = this.x + column * 32;
+	        elements.y = this.y + row * 32;
+	        elements.leftBottomCorner();
+	        wallElements.push(elements);
+	      	break;
 
       	case 9: //rightBottomCorner
-	    	var elements = new Elements();
-        elements.x = this.x + column * 32;
-        elements.y = this.y + row * 32;
-        elements.rightBottomCorner();
-        wallElements.push(elements);
-      	break;
+		    	var elements = new Elements();
+	        elements.x = this.x + column * 32;
+	        elements.y = this.y + row * 32;
+	        elements.rightBottomCorner();
+	        wallElements.push(elements);
+	      	break;
 
       	case 10: //rightTopCorner
-	    	var elements = new Elements();
-        elements.x = this.x + column * 32;
-        elements.y = this.y + row * 32;
-        elements.rightTopCorner();
-        wallElements.push(elements);
-      	break;
+		    	var elements = new Elements();
+	        elements.x = this.x + column * 32;
+	        elements.y = this.y + row * 32;
+	        elements.rightTopCorner();
+	        wallElements.push(elements);
+	      	break;
 
       	case 11: //leftTopCorner
-	    	var elements = new Elements();
-        elements.x = this.x + column * 32;
-        elements.y = this.y + row * 32;
-        elements.leftTopCorner();
-        wallElements.push(elements);
-      	break;
+		    	var elements = new Elements();
+	        elements.x = this.x + column * 32;
+	        elements.y = this.y + row * 32;
+	        elements.leftTopCorner();
+	        wallElements.push(elements);
+	      	break;
 
       	case 12: //leftTopCorner
-	    	var elements = new Elements();
-        elements.x = this.x + column * 32;
-        elements.y = this.y + row * 32;
-        elements.leftTopCorner();
-        wallElements.push(elements);
-      	break;
+		    	var elements = new Elements();
+	        elements.x = this.x + column * 32;
+	        elements.y = this.y + row * 32;
+	        elements.leftTopCorner();
+	        wallElements.push(elements);
+	      	break;
 			}
 		}
 	}
@@ -95,20 +96,14 @@ function Walls() {
 
   		var wallElement = wallElements[i];
 
-	    if (keyState[letterA]){
-	      wallElement.x += 3;
-	    }
-
-	    else if (keyState[letterD]){
-	      wallElement.x -= 3;
-	    }
-
-	    else if (keyState[letterW]){
-	      wallElement.y += 3;
-	    }
-
-	    else if (keyState[letterS]){
-	      wallElement.y -= 3;
+	    if (keyState[LETTER_A]){
+	      wallElement.x += that.increment;
+	    } else if (keyState[LETTER_D]){
+	      wallElement.x -= that.increment;
+	    } else if (keyState[LETTER_W]){
+	      wallElement.y += that.increment;
+	    } else if (keyState[LETTER_S]){
+	      wallElement.y -= that.increment;
 	    }
 
 	    if (wallElement.health <= 0) {
@@ -142,9 +137,7 @@ function Walls() {
 				collider.velY = collider.initialVelocity * 1.5;
 				collider.sY = 288;
 				wallElement.health--;
-	  	}
-
-	  	else if (collisionDirection == 't' || collisionDirection == 'b') {
+	  	} else if (collisionDirection == 't' || collisionDirection == 'b') {
 	  		collider.velY = 0;
   			collider.velX = collider.initialVelocity * 1.5;
   			collider.sY = 288;
@@ -158,8 +151,8 @@ function Walls() {
 			var collisionDirection = Utils.getCollisionDirection(collider, wallElement);
 
 			if (collisionDirection == null) {
-			collider.velX = collider.initialVelocity;
-			collider.velY = collider.initialVelocity;	
+				collider.velX = collider.initialVelocity;
+				collider.velY = collider.initialVelocity;	
 			}
 		}
 	}

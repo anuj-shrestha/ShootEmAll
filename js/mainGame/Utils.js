@@ -8,6 +8,7 @@ var Utils = (function() {
 	};
 
 	var calculateDistance = function(objA, objB) {
+
 		var objACenterX = objA.x + objA.width / 2;
 		var objACenterY = objA.y + objA.height / 2;
 		var objBCenterX = objB.x + objB.width / 2;
@@ -33,26 +34,18 @@ var Utils = (function() {
 	    var offsetY = hHeights - Math.abs(vY);
 
 	    if (offsetX >= offsetY) {
-
 	      if (vY > 0) {
 	        collisionDirection = 't';
 	        objA.y += offsetY;
-	      } 
-	      
-	      else if (vY < 0) {
+	      } else if (vY < 0) {
 	        collisionDirection = 'b';
 	        objA.y -= offsetY;
 	      }
-	    } 
-	    
-	    else {
-	      
+	    } else {
 	      if (vX > 0) {
 	        collisionDirection = 'l';
 	        objA.x += offsetX;
-	      } 
-
-	      else {
+	      } else {
 	        collisionDirection = 'r';
 	        objA.x -= offsetX;
 	      }

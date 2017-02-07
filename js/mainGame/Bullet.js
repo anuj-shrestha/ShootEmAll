@@ -36,10 +36,8 @@ function Bullet() {
 		that.y = y + 36;
 
 		if (direction % 2 == 0){
-			var temp = that.x;
 			that.x = x + 48;
 			that.y = y + 10;
-			// that.y = temp;
 		}
 
 		that.sX = 0;
@@ -48,6 +46,7 @@ function Bullet() {
 		that.destinationY = my - that.y + 0.1;
 
 		var slope = Math.max(Math.abs(that.destinationX), Math.abs(that.destinationY));
+		
 		that.xIncrement = that.destinationX / slope;
 		that.yIncrement = that.destinationY / slope;
 
@@ -58,10 +57,10 @@ function Bullet() {
 		that.sX = that.width * that.frame;
 			 
 		ctx.save();
-	    ctx.translate(that.x + that.width/2, that.y + that.height/2);
-	    ctx.rotate(that.rotation);
-		ctx.drawImage(element, that.sX, that.sY, 24, 24, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-	    ctx.restore();  
+    ctx.translate(that.x + that.width / 2, that.y + that.height / 2);
+    ctx.rotate(that.rotation);
+		ctx.drawImage(element, that.sX, that.sY, that.width, that.height, -that.width / 2, -that.height / 2, that.width, that.height);
+    ctx.restore();  
 	}
 
   	this.update = function() {

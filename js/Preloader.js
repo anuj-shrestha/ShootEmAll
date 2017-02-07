@@ -51,6 +51,7 @@ function Preloader() {
 			images[key].src = imageSources[key];
 
 			images[key].onload = function() {
+				
 				loadedImages++;
 				percentage = Math.floor((loadedImages * 100) / totalImages);
 

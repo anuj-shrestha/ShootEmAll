@@ -64,39 +64,48 @@ var ShootEmAll = (function() {
 			view.append(mainWrapper, startScreen);
 
 			selectPlayerButtonAnuj.onmouseover = function() {
+
 				view.setHTML(selectPlayerButtonAnuj, 'Health = 100, Speed = 4, Damage = 150%');
 			}
 
 			selectPlayerButtonAnuj.onmouseout = function() {
+
 				view.setHTML(selectPlayerButtonAnuj, 'Anuj Shrestha, The Killer');
 			}
 
 			selectPlayerButtonAnuj.onclick = function() {
+
 				playerName = 'anuj';
 				view.style(selectPlayerButtonAnuj, {background: 'green' });
 			}
 
 			selectPlayerButtonShyam.onmouseover = function() {
+
 				view.setHTML(selectPlayerButtonShyam, 'Health = 400, Speed = 2, Damage = 110%');
 			}
 
 			selectPlayerButtonShyam.onmouseout = function() {
+
 				view.setHTML(selectPlayerButtonShyam, 'Shyam Lal, The Hero');
 			}
 			selectPlayerButtonShyam.onclick = function() {
+
 				playerName = 'shyam';
 				view.style(selectPlayerButtonShyam, {background: 'green' });
 			}
 
 			selectPlayerButtonHari.onmouseover = function() {
+
 				view.setHTML(selectPlayerButtonHari, 'Health = 200, Speed = 3, Damage = 100%');
 			}
 
 			selectPlayerButtonHari.onmouseout = function() {
+
 				view.setHTML(selectPlayerButtonHari, 'Harke Hari, The Saviour');
 			}
 
 			selectPlayerButtonHari.onclick = function() {
+
 				playerName = 'hari';
 				view.style(selectPlayerButtonHari, {background: 'blue' });
 			}
@@ -104,7 +113,6 @@ var ShootEmAll = (function() {
 			startGameButton.onclick = function() {
 
 				shootEmAllGame.init(playerName, missionLvl); // initiate game
-
 				that.hideMainMenu();
 			}
 
@@ -112,22 +120,24 @@ var ShootEmAll = (function() {
 
 				missionLvl = 1;
 				shootEmAllGame.init(playerName, missionLvl); // initiate game
-
 				that.hideMainMenu();
 			}
 		}
 
 		this.hideMainMenu = function() {
+
 			view.style(startScreen, {display: 'none' });
 		}
 
 		this.showMainMenu = function() {
+
 			view.style(startScreen, {display: 'block' });
 		}
 	}
 
 	return {
 		getInstance: function() {
+			
 			if (instance == null) {
 				instance = new ShootEmAll();
 			}

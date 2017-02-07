@@ -3,8 +3,7 @@ function Enemy() {
 	var gameUI = GameUI.getInstance();
 	var ctx = gameUI.getContext();
 
-	var zombieCounter = 0;
-	var maxZombie = 10;
+	var FRAME_TIMER = 8;
 
 	var element = new Image();
 	element.src = "images/player-enemy-sprites.png";
@@ -12,10 +11,10 @@ function Enemy() {
 	var hostageWalkingImage = new Image();
 	hostageWalkingImage.src = 'images/friend-walking.png';
 
-	var letterA = 65;
-	var letterD = 68;
-	var letterW = 87;
-	var letterS = 83;
+	var LETTER_A = 65;
+	var LETTER_D = 68;
+	var LETTER_W = 87;
+	var LETTER_S = 83;
 
 	var playerDistance;
 
@@ -40,6 +39,7 @@ function Enemy() {
 	this.sWidth = 48;
 	this.width = 96;
 	this.height = 96;
+	this.increment = 3;
 
 	this.frame = 0;
 	this.rotation;
@@ -51,62 +51,58 @@ function Enemy() {
 
 	this.draw = function(rotation, base, hostage) {
 
+		var bloodsX = 0;
+		var bloodsY = 384;
+
 		if (that.baseDistance < playerDistance) {
 			rotation = Math.atan2((base.y - that.y), (base.x - that.x)) - Math.PI / 2;
-		}
-		else if (that.hostageDistance < playerDistance) {
+		} else if (that.hostageDistance < playerDistance) {
 			rotation = Math.atan2((hostage.y - that.y), (hostage.x - that.x)) - Math.PI / 2;
 		}
 
-		if (that.time % 8 === 0 || that.time % 8 === 0){
+		if (that.time % 8 === 0){
 			that.frame++;
-
-			if (that.frame >= 4){
-				that.frame = 0;
-
-				if(that.sY === 144){
-					that.sY = 144 + 48;
-				}
-
-				else {
-					that.sY = 144;
-				}
-			}
 		}
 
+		if (that.frame >= 4){
+			that.frame = 0;
+
+			if(that.sY === 144){
+				that.sY = 144 + 48;
+			} else {
+				that.sY = 144;
+			}
+		}
+		
 		that.sX = that.sWidth * that.frame;
 
 		ctx.save();
-		ctx.translate(that.x + that.width/2, that.y + that.height/2);
+		ctx.translate(that.x + that.width / 2, that.y + that.height / 2);
 		ctx.rotate(rotation);
-		ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sWidth, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sWidth, 
+			-that.width / 2, -that.height / 2, that.width, that.height);
 
-		if (that.health < 90 && that.health > 70){
-			ctx.drawImage(element, 0, 384, that.sWidth, that.sWidth,
-			  that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		if (that.health < 90 && that.health > 70) {
+			bloodsX = 0;
+		} else if (that.health <= 70 && that.health > 50) {
+			bloodsX = 48;
+		} else if (that.health <= 50 && that.health > 25) {
+			bloodsX = 96;
+		} else if (that.health <= 25) {
+			bloodsX = 142;
+		} else {
+			bloodsX = 196;
 		}
 
-		else if (that.health <= 70 && that.health > 50){
-			ctx.drawImage(element, 48, 384, that.sWidth, that.sWidth, 
-				that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-		}
+		ctx.drawImage(element, bloodsX, bloodsY, that.sWidth, that.sWidth, //blood animation when health reduced
+			  -that.width / 2, -that.height / 2, that.width, that.height);
 
-		else if (that.health <= 50 && that.health > 25){
-			ctx.drawImage(element, 96, 384, that.sWidth, that.sWidth, 
-				that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-		}
-
-		else if (that.health <= 25){
-			ctx.drawImage(element, 142, 384, that.sWidth, that.sWidth, 
-				that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-		}
-		
-		if (that.sX === 96 && that.sY === 288 && that.time % 5 === 0){
+		if (that.sX === 96 && that.sY === 288 && that.time % 5 === 0) { //attacking animation
 			ctx.drawImage(element, that.sX, that.sY + 48, that.sWidth, that.sWidth, 
-				that.width/2 * -1, that.height/2, that.width, that.height);
+				-that.width / 2, that.height / 2, that.width, that.height);
 		}
-		ctx.restore();		
 
+		ctx.restore();		
 	}
 	
 	this.update = function(player, base, hostage, keyState) {
@@ -116,9 +112,7 @@ function Enemy() {
 		if (base != null) {
 			that.baseDistance = Utils.getDistance(that, base);
 			playerDistance = Utils.getDistance(that, player)
-		}
-
-		else if (hostage != null) {
+		} else if (hostage != null) {
 			that.hostageDistance = Utils.getDistance(that, hostage);
 			playerDistance = Utils.getDistance(that, player)
 		}
@@ -126,18 +120,13 @@ function Enemy() {
 		if (that.baseDistance < playerDistance) {
 			that.destinationX = base.x - that.x + 0.1;
 			that.destinationY = base.y - that.y + 0.1;
-		}
-
-		else if (that != hostage && that.hostageDistance < playerDistance && hostage.found) {
+		} else if (that != hostage && that.hostageDistance < playerDistance && hostage.found) {
 			that.destinationX = hostage.x - that.x + 0.1;
 			that.destinationY = hostage.y - that.y + 0.1;
-		}
-
-		else {
+		} else {
 			that.destinationX = player.x - that.x + 0.1;
 			that.destinationY = player.y - that.y + 0.1;
 		}
-		
 		
 		var max = Math.max(Math.abs(that.destinationX), Math.abs(that.destinationY));
 		var xIncrement = that.destinationX / max;
@@ -146,20 +135,14 @@ function Enemy() {
 		that.x += xIncrement * that.velX;
 		that.y += yIncrement * that.velY;
 
-		if (keyState[letterA]){
-	      that.x += 3;
-	  }
-
-    else if (keyState[letterD]){
-      that.x -= 3;
-    }
-
-    else if (keyState[letterW]){
-      that.y += 3;
-    }
-
-    else if (keyState[letterS]){
-      that.y -= 3;
+		if (keyState[LETTER_A]){
+	    that.x += that.increment;
+	  } else if (keyState[LETTER_D]){
+      that.x -= that.increment;
+    } else if (keyState[LETTER_W]){
+      that.y += that.increment;
+    } else if (keyState[LETTER_S]){
+      that.y -= that.increment;
     }
 	}
 
@@ -186,26 +169,26 @@ function Enemy() {
 
 	this.drawHostage = function(rotation) {
 		
-		if (that.time % 8 === 0 || that.time % 8 === 0){
+		if (that.time % FRAME_TIMER === 0 || that.time % FRAME_TIMER === 0){
 			that.frame++;
-
-			if (that.frame >= 4){
-				that.frame = 0;
-				that.sY += 290;
-
-				if (that.sY >= 290 * 2) {
-					that.sY = 0;
-				}
-			}			
 		}
 
+		if (that.frame >= 4){
+			that.frame = 0;
+			that.sY += 290;
+
+			if (that.sY >= 290 * 2) {
+				that.sY = 0;
+			}
+		}			
+	
 		that.sX = (that.sWidth + 30) * that.frame;
 
 		ctx.save();
-	  ctx.translate(that.x + that.width/2, that.y + that.height/2);
+	  ctx.translate(that.x + that.width / 2, that.y + that.height / 2);
 	  ctx.rotate(that.rotation);
 	  ctx.drawImage(hostageWalkingImage, that.sX, that.sY, that.sWidth, that.sWidth,
-	   that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+	   -that.width / 2, -that.height / 2, that.width, that.height);
 	  ctx.restore();
 	}
 
@@ -215,9 +198,7 @@ function Enemy() {
 
 		if (collisionDirection == 'l' || collisionDirection == 'r') {
 		  collider.velX = 0;
-		}
-
-		else if (collisionDirection == 't' || collisionDirection == 'b') {
+		} else if (collisionDirection == 't' || collisionDirection == 'b') {
 		  collider.velY = 0;
 		}
 
