@@ -1,3 +1,4 @@
+// game sound class defined here
 function GameSound() {
 
   var gameSong;

@@ -130,10 +130,12 @@ function ShootEmAllGame() {
 			that.drawGameObjects();
 			that.checkBulletEnemyCollision();
 			that.checkPlayerEnemyCollision();
-			that.resetEnemyProperties();
+			that.calculateEnemiesLeft();
 
-			that.generateEnemies(1);
-			
+			if (enemyLeft < 2){
+				that.generateEnemies(1);
+			}
+
 			if (!stopped) {
 				requestAnimation = window.requestAnimationFrame(startGameLoop, canvas);
 			}
@@ -148,15 +150,11 @@ function ShootEmAllGame() {
 			this.player.health = 60;
 			this.player.initialVelocity = 5;
 			this.player.damage = 2.6;
-		}
-
-		else if (currentPlayerName == 'shyam') {
+		} else if (currentPlayerName == 'shyam') {
 			this.player.health = 400;
 			this.player.initialVelocity = 1;
 			this.player.damage = 1.2;
-		}
-
-		else if (currentPlayerName == 'hari') {
+		} else if (currentPlayerName == 'hari') {
 			this.player.health = 200;
 			this.player.initialVelocity = 3;
 			this.player.damage = 1;
@@ -171,9 +169,7 @@ function ShootEmAllGame() {
 			base.x = WIDTH / 2 - base.width / 2;
 			base.y = HEIGHT / 2 - base.height / 2;
 			maxEnemies = 25;
-		}
-		
-		else if (currentMissionLvl == 2) {
+		} else if (currentMissionLvl == 2) {
 			hostage = new Enemy();
 			hostage.health = 500;
 			hostage.hostage(that.player);
@@ -186,15 +182,14 @@ function ShootEmAllGame() {
 	}
 
 	that.generateTrees = function() {
+
 		for (var i = 0; i < 100; i++) {
 
 			tree = new Elements();
 
 			if (i % 2 == 0) {
 			tree.tree1(); // sets properties of tree type 1
-			}
-
-			else {
+			} else {
 				tree.tree2();
 			}
 
@@ -208,6 +203,7 @@ function ShootEmAllGame() {
 	}
 
 	that.spawnPowerUps = function() {
+
 		if ((gameTime % 100 === 0 && gameTime < 101) || gameTime % 1000 === 0) {
 			powerUp = new Elements();
 			powerUp.gunPowerUp();
@@ -222,25 +218,25 @@ function ShootEmAllGame() {
 			that.checkPlayerPowerUpCollision();
 		}	
 
-		if (powerUpState) {
+		if (!powerUpState) {
 
-			if (mouseState === 1 && bulletCount > 0) {
-				var tempTime = gameTime;
-				var bullet = new Bullet();
-				bullet.init(that.player.x, that.player.y, gameTime, mouse.x, mouse.y, 
-					that.player.playerRotation);
-				bullets.push(bullet);
-				bulletCount--;
-				gameSound.play('machineGun');
-			}
+			return;
+		}
 
-			if (mouseState === 0) {
-				gameSound.stopMachineGunSound();
-			}
+		if (mouseState === 1 && bulletCount > 0) {
+			var tempTime = gameTime;
+			var bullet = new Bullet();
+			bullet.init(that.player.x, that.player.y, gameTime, mouse.x, mouse.y, 
+				that.player.playerRotation);
+			bullets.push(bullet);
+			bulletCount--;
+			gameSound.play('machineGun');
+		} else if (mouseState === 0) {
+			gameSound.stopMachineGunSound();
+		}
 
-			if (bulletCount <= 0){
-				powerUpState = false;
-			}
+		if (bulletCount <= 0){
+			powerUpState = false;
 		}
 	}
 
@@ -249,30 +245,30 @@ function ShootEmAllGame() {
 		that.player.update(keyState);
 		that.walls.playerCollisionWithWallCheck(that.player);
 
-		if (currentMissionLvl == 1) {
-			var playerBaseCollision = base.elementCollisionCheck(that.player);
+    switch (currentMissionLvl) {
+    	case 1:
+    		var playerBaseCollision = base.elementCollisionCheck(that.player);
 
-			if (playerBaseCollision) {
-				bulletCount++;
-			}
+				if (playerBaseCollision) {
+					bulletCount++;
+				}
+				base.update(keyState);
+    		break;
 
-			base.update(keyState);
-		}
+    	case 2:
+    		var playerHostageCollision = Utils.getCollisionDirection(that.player, hostage);
 
-		else if (currentMissionLvl == 2) {
-			var playerHostageCollision = Utils.getCollisionDirection(that.player, hostage);
+				that.walls.playerCollisionWithWallCheck(hostage);
 
-			that.walls.playerCollisionWithWallCheck(hostage);
-
-			if (playerHostageCollision != null) {
-				hostage.found = true;
-				hostage.velX = 1.5;
-				hostage.velY = 1.5;
-			}
-
-			hostage.update(that.player, null, hostage, keyState);
-			resqueZone.update(keyState);
-		}
+				if (playerHostageCollision != null) {
+					hostage.found = true;
+					hostage.velX = 1.5;
+					hostage.velY = 1.5;
+				}
+				hostage.update(that.player, null, hostage, keyState);
+				resqueZone.update(keyState);
+    		break;
+    }
 		
 		that.background.update(keyState);
 		that.walls.update(keyState);
@@ -356,56 +352,60 @@ function ShootEmAllGame() {
 				continue;
 
 			if (currentMissionLvl == 1) {
-				enemies[i].update(that.player, base, null, keyState);
-
-				var baseEnemyCollision = base.elementCollisionCheck(enemies[i]);
-
-				if (baseEnemyCollision == 't' || baseEnemyCollision == 'b' || 
-					baseEnemyCollision =='l' || baseEnemyCollision == 'r') {
-					enemies[i].sY = 288;
-					base.health--;
-					if (base.health < 0) {
-						base = null;
-						that.gameOverCase();
-					}
-				}
-			}
-
-			else if (currentMissionLvl == 2) {
+				that.updateFirstMissionEnemies(i);
+			} else if (currentMissionLvl == 2) {
       	enemies[i].update(that.player, null, hostage, keyState);
-      }
-
-      else {
+      } else {
       	enemies[i].update(that.player, null, null, keyState);
       }
 
       if (enemyBoss != enemies[i]) {
       	that.walls.wallEnemyCollisionCheck(enemies[i]);
-      }
-
-      else {
+      } else {
       	enemies[i].velX = enemies[i].initialVelocity;
       	enemies[i].velY = enemies[i].initialVelocity;	
       }
 
-      if (currentMissionLvl == 2 && hostage.found) {
-      	var hostageEnemyCollision = hostage.elementCollisionCheck(enemies[i]);
-
-      	if (hostageEnemyCollision == 't' || hostageEnemyCollision == 'b' || 
-      		hostageEnemyCollision =='l' || hostageEnemyCollision == 'r') {
-      		enemies[i].sY = 288;
-      		hostage.health--;
-      		hostage.sY = 290 * 2;
-      		
-      		if (hostage.health < 0) {
-      			hostage = null;
-      			that.gameOverCase();
-      		}
-
-      		that.killEnemy(enemies[i], enemies[i].index);
-      	}
-      }
+      that.updateEnemiesAfterHostageFound(i);      
  		}
+	}
+
+	that.updateFirstMissionEnemies = function(i) {
+
+		enemies[i].update(that.player, base, null, keyState);
+
+		var baseEnemyCollision = base.elementCollisionCheck(enemies[i]);
+
+		if (baseEnemyCollision == 't' || baseEnemyCollision == 'b' || 
+			baseEnemyCollision =='l' || baseEnemyCollision == 'r') {
+			enemies[i].sY = 288;
+			base.health--;
+
+			if (base.health < 0) {
+				base = null;
+				that.gameOverCase();
+			}
+		}
+	}
+
+	that.updateEnemiesAfterHostageFound = function(i) {
+
+		if (currentMissionLvl == 2 && hostage.found) {
+			var hostageEnemyCollision = hostage.elementCollisionCheck(enemies[i]);
+
+			if (hostageEnemyCollision == 't' || hostageEnemyCollision == 'b' || 
+				hostageEnemyCollision =='l' || hostageEnemyCollision == 'r') {
+				enemies[i].sY = 288;
+				hostage.health--;
+				hostage.sY = 290 * 2;
+				that.killEnemy(enemies[i], enemies[i].index);
+			}
+
+			if (hostage.health < 0) {
+				hostage = null;
+				that.gameOverCase();
+			}
+		}
 	}
 
 	that.drawInformationUI = function() {
@@ -418,9 +418,7 @@ function ShootEmAllGame() {
 		if (powerUpState == false || bulletCount <= 0) {
 			gameUI.writeText('Gun: Pistol', 20, 120, 30);
 			gameUI.writeText('Bullets: Infinite', 20, 110, 60);
-		}
-
-		else if (powerUpState == true) {
+		} else if (powerUpState == true) {
 			gameUI.writeText('Gun: Machine Gun', 20, 110, 30);
 			gameUI.writeText('Bullets: '+ bulletCount, 20, 110, 60);
 		}
@@ -446,9 +444,7 @@ function ShootEmAllGame() {
 
 		if (currentMissionLvl == 1 && base != null) {
 			base.drawBase(); //draws base 
-		}
-
-		else if (currentMissionLvl == 2) {
+		} else if (currentMissionLvl == 2) {
 			hostage.drawHostage(hostage.rotation);
 			resqueZone.drawPowerUp(); // uses drawPowerUp function to draw resquezone as well;
 		}
@@ -460,9 +456,7 @@ function ShootEmAllGame() {
 		if (currentMissionLvl == 2) {
 			gameUI.drawDottedPath(that.player.x + that.player.width / 2, 
 				that.player.y + that.player.height / 2, hostage.x,  hostage.y);
-		}
-
-		else {
+		} else {
 			gameUI.drawDottedPath(that.player.x + that.player.width / 2, 
 				that.player.y + that.player.height / 2, mouse.x,  mouse.y);
 		}
@@ -484,26 +478,26 @@ function ShootEmAllGame() {
 		var targetEnemyForHostage;
 
 	  for (var i = 0; i < enemyIndex; i++) {
+	  	if (enemies[i] == undefined)
+	  		continue;
 
-	  	if (enemies[i] != undefined) {
-	      enemies[i].rotation = Math.atan2((that.player.y - enemies[i].y), 
-	      	(that.player.x - enemies[i].x)) - Math.PI / 2;
-	      enemies[i].draw(enemies[i].rotation, base, hostage);
-	    }
+      enemies[i].rotation = Math.atan2((that.player.y - enemies[i].y), 
+      	(that.player.x - enemies[i].x)) - Math.PI / 2;
+      enemies[i].draw(enemies[i].rotation, base, hostage);
+	    
+      switch (currentMissionLvl) {
+      	case 1:
+      		if (targetEnemyForBase == undefined && enemies[i].baseDistance < 300) {
+	    			targetEnemyForBase = enemies[i];
+	    		}
+      		break;
 
-	    if (enemies[i] != undefined && currentMissionLvl == 1) {
-
-	    	if (targetEnemyForBase == undefined && enemies[i].baseDistance < 300) {
-	    		targetEnemyForBase = enemies[i];
-	    	}
-	    }
-
-	    else if (enemies[i] != undefined && currentMissionLvl == 2) {
-
-	    	if (targetEnemyForHostage == undefined && enemies[i].hostageDistance < 200) {
-	    		targetEnemyForHostage = enemies[i];
-	    	}
-	    }
+      	case 2:
+      		if (targetEnemyForHostage == undefined && enemies[i].hostageDistance < 200) {
+		    		targetEnemyForHostage = enemies[i];
+		    	}
+      		break;
+      }
  		}
  		that.getTargetForMission(targetEnemyForBase, targetEnemyForHostage);
 	}
@@ -513,16 +507,19 @@ function ShootEmAllGame() {
 		if (targetEnemyForBase != undefined && targetEnemyForBase.baseDistance < 300) {
 			base.rotation = Math.atan2((base.y + base.height / 2 - targetEnemyForBase.y), 
 				(base.x + base.width / 2 - targetEnemyForBase.x)) - Math.PI / 2;
+
 			var bullet = new Bullet();
+
 			bullet.bulletFromBase = true;
 			bullet.init(base.x + base.width / 2, base.y + base.height / 2, gameTime, 
 				targetEnemyForBase.x + targetEnemyForBase.width / 2, 
 				targetEnemyForBase.y + targetEnemyForBase.height / 2, base.rotation);
+
 			bullets.push(bullet);
 			gameSound.play('machineGun');
-		}
 
-		else if (targetEnemyForHostage != undefined && targetEnemyForHostage.hostageDistance < 200) {
+		} else if (targetEnemyForHostage != undefined && targetEnemyForHostage.hostageDistance < 200) {
+
 			hostage.rotation = Math.atan2((hostage.y + hostage.height / 2 - targetEnemyForHostage.y), 
 				(hostage.x + hostage.width / 2 - targetEnemyForHostage.x)) - Math.PI / 2;
 		}
@@ -531,11 +528,11 @@ function ShootEmAllGame() {
 	that.drawFirstMissionUI = function() {
 
 		survivalTimeLeft = survivalTime - Math.floor(gameTime / 60);
-		gameUI.writeText('Base Health Left: ' + base.health, 30, WIDTH / 2 - 150, 80);
+		gameUI.writeText('Base Health Left: ' + base.health, 30, WIDTH / 2 - 150, 80); //parameters are text, fontsize, x, y, color
 		gameUI.writeText('Time Left To Win: ' + survivalTimeLeft, 20, WIDTH / 2 - 90, 120);
 
-		if (gameTime < 500) {
-			gameUI.writeText('Mission 1: Survive and Protect your tank for ' + survivalTimeLeft, 25, 30 , 300);
+		if (gameTime < 400) {
+			gameUI.writeText('Mission 1: Survive and Protect your tank for ' + survivalTimeLeft, 25, 450, 180);
 		}
 
 		if (survivalTimeLeft <= 0) {
@@ -550,9 +547,8 @@ function ShootEmAllGame() {
 		gameUI.writeText('Time Left To Lose: ' + survivalTimeLeft, 20, WIDTH / 2 - 90, 120);
 
 		if (gameTime < 500) {
-			gameUI.writeText('Mission 2: Find hostage and bring him back to helipad within ' + survivalTimeLeft, 25, 30 , 300);
+			gameUI.writeText('Mission 2: Find hostage and bring him back to helipad within ' + survivalTimeLeft, 25, 350 , 180);
 		}
-
 
 		if (survivalTimeLeft <= 0) {
 			that.gameOverCase();
@@ -676,34 +672,35 @@ function ShootEmAllGame() {
 
 		for (var i = 0; i < enemyIndex; i++) {
 
-			if (enemies[i] != undefined) {
-				var enemyAttacking = enemies[i];
+			if (enemies[i] == undefined)
+				continue;
 
-				for (var j = 0; j < bullets.length; j++) {
+			var enemyAttacking = enemies[i];
 
-					var bulletFired = bullets[j];
+			for (var j = 0; j < bullets.length; j++) {
 
-		      if (bulletFired.x < 0 || bulletFired.x > WIDTH || bulletFired.y < 0 ||
-		       bulletFired.y > HEIGHT) {
-		      	bullets.splice(j, 1);
-		      }
+				var bulletFired = bullets[j];
 
-		      var collision = Utils.getAABBIntersect(bulletFired.x, bulletFired.y, 
-		      	bulletFired.width, bulletFired.height, 
-		      	enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
+	      if (bulletFired.x < 0 || bulletFired.x > WIDTH || bulletFired.y < 0 ||
+	       bulletFired.y > HEIGHT) {
+	      	bullets.splice(j, 1);
+	      }
 
-		      if (collision) {
-		      	that.deleteBullet(bulletFired, j);
-		      	that.killEnemy(enemyAttacking, enemyAttacking.index);
-		      	enemyAttacking.velX = -0.5;
-		      	enemyAttacking.velY = -0.5;
-		      }
-	    	}
-	    }
+	      var collision = Utils.getAABBIntersect(bulletFired.x, bulletFired.y, 
+	      	bulletFired.width, bulletFired.height, 
+	      	enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
+
+	      if (collision) {
+	      	that.deleteBullet(bulletFired, j);
+	      	that.killEnemy(enemyAttacking, enemyAttacking.index);
+	      	enemyAttacking.velX = -0.5;
+	      	enemyAttacking.velY = -0.5;
+	      }
+    	}
     }	
 	}
 
-	var tempTimer = 0;
+	var bulletDestroyTimer = 0;
 
 	that.deleteBullet = function(element, index) {
 
@@ -711,29 +708,26 @@ function ShootEmAllGame() {
 		element.velY -= 1;
 		element.sY = 120;
 
-		if (tempTimer % 5 === 0) {
+		if (bulletDestroyTimer % 5 === 0) {
 			// gameSound.play('bulletHit');
 			element.frame++;
-
-			if (element.frame >= 3) {
-				element.frame = 0;		
-			}
 		}
 
-		if (tempTimer > 20 || element.velX <= 0 || element.velY <= 0) {
+		if (element.frame >= 3) {
+			element.frame = 0;		
+		}
+
+		if (bulletDestroyTimer > 20 || element.velX <= 0 || element.velY <= 0) {
 			bullets.splice(index, 1);
-			tempTimer = 0;
-		}
-
-		else {
-			tempTimer++;
+			bulletDestroyTimer = 0;
+		} else {
+			bulletDestroyTimer++;
 		}
 	}
 
 	that.killEnemy = function(element, index) {
 
 		if (element.health < 0){
-			
 
 			if (enemyBossCount > 0 && element == enemyBoss) {
 				enemyBoss = undefined;
@@ -742,9 +736,8 @@ function ShootEmAllGame() {
 			delete enemies[index];
 			gameSound.play('killEnemy');
 			gameScore++;
-		}
 
-		else{
+		} else {
 			element.health -= that.player.damage;
 		}
 	}
@@ -752,50 +745,36 @@ function ShootEmAllGame() {
 	that.checkPlayerEnemyCollision = function() {
 		
 		// var currentPlayer = that.player;
-		
 		for (var i = 0; i < enemyIndex; i++) {
 
-			if (enemies[i] != undefined) {
-				var enemyAttacking = enemies[i];					
-	      var collision = Utils.getAABBIntersect(that.player.x, that.player.y, 
-	      	that.player.width, that.player.height,
-	       enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
-	      var tempVel = enemyAttacking.velX;
-	      collisionTime = 0;
-	      var initialVelocity = enemyAttacking.velX;
+			if (enemies[i] == undefined) 
+				continue;
 
-	      if (collision) {
-	      	collisionTime++;
+			var enemyAttacking = enemies[i];					
+      var collision = Utils.getAABBIntersect(that.player.x, that.player.y, 
+      	that.player.width, that.player.height,
+       enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
+      var tempVel = enemyAttacking.velX;
+      collisionTime = 0;
+      var initialVelocity = enemyAttacking.velX;
 
-	      	if (collisionTime < 5 || collisionTime % 20) {
-	      		gameSound.play('playerPain');
-	      	}
+      if (collision) {
+      	collisionTime++;
 
-	      	enemyAttacking.velX = 0.5;
-	      	enemyAttacking.velY = 0.5;
-	      	enemyAttacking.sY = 288; //attacking sprites
-	      	that.player.health--;
-					
-	      	if (that.player.health <= 0) {
-	      		that.gameOverCase();
-	      	}
-	      }
-    	}
+      	if (collisionTime < 5 || collisionTime % 20) {
+      		gameSound.play('playerPain');
+      	}
+
+      	enemyAttacking.velX = 0.5;
+      	enemyAttacking.velY = 0.5;
+      	enemyAttacking.sY = 288; //attacking sprites
+      	that.player.health--;
+				
+      	if (that.player.health <= 0) {
+      		that.gameOverCase();
+      	}
+      }
     }		
-	}
-
-	that.resetEnemyProperties = function() {
-
-		for (var i = 0; i < enemyIndex; i++) {
-
-			if (enemies[i] != undefined) {
-
-				var enemyAttacking = enemies[i];					
-		    var collision = Utils.getAABBIntersect(that.player.x, that.player.y, 
-		    	that.player.width, that.player.height,
-		    	enemyAttacking.x, enemyAttacking.y, enemyAttacking.width, enemyAttacking.height);
-	  	}
-	  }
 	}
 
 	that.checkPlayerPowerUpCollision = function() {
@@ -810,9 +789,7 @@ function ShootEmAllGame() {
 			powerUp = null;
 			bulletCount += maxBullets;
 			gameSound.play('powerUpSound');				
-		}
-
-		else if (collision && powerUp.type == 19) { // type 19 is healthpowerup
+		} else if (collision && powerUp.type == 19) { // type 19 is healthpowerup
 			that.player.health += 100;
 			var healthPercent = (200 - that.player.health) * 100 / 200;
 			healthBar.updateHealthUI(healthPercent);
@@ -821,14 +798,22 @@ function ShootEmAllGame() {
 		}
 	}
 
+	that.calculateEnemiesLeft = function() {
+		var temp = 0;
+		for (var i = 0; i < enemies.length; i++) {
+			if (enemies[i] == undefined) {
+				temp++;
+			}
+		}
+		enemyLeft = enemies.length - temp;
+	}
+
 	that.generateEnemies = function(firstTime) {
 
-		var temp = 0;
-		var enemiesKilled = 0;
-		
-		if (enemyLeft < 2){
-			maxEnemies += 20;
 
+		
+		
+			maxEnemies += 20;
 
 			for (var i = 0; i < maxEnemies; i++) {
 
@@ -859,15 +844,6 @@ function ShootEmAllGame() {
 				enemies[enemyIndex] = this.enemy;
 				enemyIndex++;
 			}
-		}
-
-		for (var i = 0; i < enemies.length; i++) {
-			if (enemies[i] == undefined) {
-				temp++;
-			}
-		}
-		enemyLeft = enemies.length - temp;
-		console.log('enemyLeft', enemyLeft);
 	}
 
 	that.missionCompleteCase = function() {
@@ -885,7 +861,6 @@ function ShootEmAllGame() {
 
 	that.gameOverCase = function() {
 
-		console.log('gameOverCase', requestAnimation);
 		gameSound.play('playerDie');	
 
 		window.cancelAnimationFrame(requestAnimation);
@@ -894,7 +869,6 @@ function ShootEmAllGame() {
 		localStorage.setItem('shootEmAllHighScore', oldHighScore);
 		gameUI.writeText('Game Over !!!', 120, WIDTH/2 - 280, HEIGHT / 2, 'orange');
   	gameUI.writeText('Press Space To Play Again', 60, WIDTH/2 - 300, HEIGHT - 100, 'orange');
-		// that.player = null;
 		that.restartGame();	
 	}
 

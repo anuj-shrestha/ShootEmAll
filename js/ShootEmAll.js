@@ -77,6 +77,9 @@ var ShootEmAll = (function() {
 
 				playerName = 'anuj';
 				view.style(selectPlayerButtonAnuj, {background: 'green' });
+				view.style(selectPlayerButtonShyam, {background: 'silver' });
+				view.style(selectPlayerButtonHari, {background: 'pink' });
+
 			}
 
 			selectPlayerButtonShyam.onmouseover = function() {
@@ -92,6 +95,8 @@ var ShootEmAll = (function() {
 
 				playerName = 'shyam';
 				view.style(selectPlayerButtonShyam, {background: 'green' });
+				view.style(selectPlayerButtonAnuj, {background: 'teal' });
+				view.style(selectPlayerButtonHari, {background: 'pink' });
 			}
 
 			selectPlayerButtonHari.onmouseover = function() {
@@ -108,6 +113,8 @@ var ShootEmAll = (function() {
 
 				playerName = 'hari';
 				view.style(selectPlayerButtonHari, {background: 'blue' });
+				view.style(selectPlayerButtonAnuj, {background: 'teal' });
+				view.style(selectPlayerButtonShyam, {background: 'silver' });
 			}
 
 			startGameButton.onclick = function() {
