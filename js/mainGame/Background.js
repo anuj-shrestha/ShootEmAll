@@ -30,8 +30,8 @@ function Background() {
 
 	this.x = -this.centerX;
 	this.y = -this.centerY;
-	this.xIncrement = 0;
-	this.yIncrement = 0;
+	this.increment = 3;
+
 
 	var that = this;
 
@@ -42,61 +42,55 @@ function Background() {
 
 	this.draw = function() {
 		
-		ctx.drawImage(element, that.sX, that.sY, 2000, 1250, that.x, that.y, 2000, 1250);
+		ctx.drawImage(element, that.sX, that.sY, that.width, that.sHeight, that.x, that.y, that.width, that.height);
 		if (that.x < -500) {
-			ctx.drawImage(element, that.sX, that.sY, 2000, 1250, that.x + 2000, that.y, that.width, that.height);
-			ctx.drawImage(element, that.sX, that.sY, 2000, 1250, that.x + 2000, that.y + 1250, that.width, that.height);
+			drawNewBg(that.width, 0);
+			drawNewBg(that.width, that.height);
 		}
 
 		if (that.x > 0) {
-			ctx.drawImage(element, that.sX, that.sY, 2000, 1250, that.x - 2000, that.y, that.width, that.height);
-			ctx.drawImage(element, that.sX, that.sY, 2000, 1250, that.x - 2000, that.y - 1250, that.width, that.height);
+			drawNewBg(-that.width, 0);
+			drawNewBg(-that.width, -that.height);
 		}
 
 		if (that.y < -500) {
-			ctx.drawImage(element, that.sX, that.sY, 2000, 1250, that.x, that.y + 1250, that.width, that.height);
-			ctx.drawImage(element, that.sX, that.sY, 2000, 1250, that.x - 2000, that.y + 1250, that.width, that.height);
+			drawNewBg(0, that.height);
+			drawNewBg(-that.width, that.height);
 		}
 
 		if (that.y > 0) {
-			ctx.drawImage(element, that.sX, that.sY, 2000, 1250, that.x, that.y - 1250, that.width, that.height);
-			ctx.drawImage(element, that.sX, that.sY, 2000, 1250, that.x + 2000, that.y - 1250, that.width, that.height);
+			drawNewBg(0, -that.height);
+			drawNewBg(that.width, -that.height);
+		}
+
+		function drawNewBg(newX, newY) {
+			ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sHeight, that.x + newX, that.y + newY, that.width, that.height);
 		}
 	}
 	
 	this.update = function(keyState) {
 		
 		if (keyState[letterA]){
-			that.x += 3;
-			that.xIncrement = 2;
+			that.x += that.increment;
 		}
 
 		else if (keyState[letterD]){
-			that.x -= 3;
-			that.xIncrement = -2;
+			that.x -= that.increment;
 		}
 
 		else if (keyState[letterW]){
-			that.y += 3;
-			that.yIncrement = 2;
+			that.y += that.increment;
 		}
 
 		else if (keyState[letterS]){
-			that.y -= 3;
-			that.yIncrement = -2;
+			that.y -= that.increment;
 		}
 
-		else{
-			that.xIncrement = 0;
-			that.yIncrement = 0;
-		}
-
+		// to limit background movement upto background size
 		// that.x = Math.max(Math.min(that.x, gameUI.getWidth() - that.width), 0);
 		// that.y = Math.max(Math.min(that.y, gameUI.getHeight() - that.height), 0);
 
 		that.centerX = that.x + that.width / 2;
 		that.centerY = that.y + that.height / 2;
-
-		
 	}
 }

@@ -4,10 +4,10 @@ function Player() {
 	var canvas = gameUI.getCanvas();
 	var ctx = gameUI.getContext();
 
-	var letterA = 65;
-	var letterD = 68;
-	var letterW = 87;
-	var letterS = 83;
+	var LETTER_A = 65;
+	var LETTER_D = 68;
+	var LETTER_W = 87;
+	var LETTER_S = 83;
 
 	var element = new Image();
 	element.src = "images/player-enemy-sprites.png";
@@ -43,70 +43,79 @@ function Player() {
 		that.y = y;
 	}
 
+	this.keyPressed = function(keyState) {
+	
+    if (keyState.hasOwnProperty(LETTER_W) || keyState.hasOwnProperty(LETTER_S) || 
+    	keyState.hasOwnProperty(LETTER_A) || keyState.hasOwnProperty(LETTER_D)) {
+    	return true;
+    }
+     
+    return false;
+	}
+
 	this.setDimension = function(width, height) {
 		that.width = width;
 		that.height = height;
 	}
 
-	this.draw = function(rotation) {
+	this.draw = function(rotation, keyState) {
+		var bloodsX = 0;
+		var bloodsY = 384;
 
-		if (that.x % 8 === 0 || that.y % 8 === 0) {
+		if ((that.x + that.y) % 4 === 0 && that.keyPressed(keyState)) {
 			that.frame++;
-
-			if (that.frame >= 4) {
-				that.frame = 0;
-
-				if (that.sY === 4) {
-					that.sY = 48+4;
-				}
-
-				else {
-					that.sY = 4;
-				}
-			}
 		}
 
-		that.sX = (that.sWidth + 14) * that.frame +7;
+		if (that.frame >= 4) {
+			that.frame = 0;
+
+			if (that.sY === 4) {
+				that.sY = 52;
+			} else {
+				that.sY = 4;
+			}
+		}
+		
+
+		that.sX = (that.sWidth + 14) * that.frame + 7;
 
 		ctx.save();
 	  ctx.translate(that.x + that.width/2, that.y + that.height/2);
 	  ctx.rotate(rotation);
-		ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-
-		if (that.health < 190 && that.health > 70){
-			ctx.drawImage(element, 0, 384, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-		}
-
-		else if (that.health <= 70 && that.health > 50){
-			ctx.drawImage(element, 48, 384, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-		}
-
-		else if (that.health <= 50 && that.health > 25){
-			ctx.drawImage(element, 96, 384, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-		}
-
-		else if (that.health <= 25){
-			ctx.drawImage(element, 142, 384, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		
+		if (that.health < 190 && that.health > 70) {
+			bloodsX = 0;
+		} else if (that.health <= 70 && that.health > 50) {
+			bloodsX = 48;
+		} else if (that.health <= 50 && that.health > 25) {
+			bloodsX = 96;
+		} else if (that.health <= 25) {
+			bloodsX = 142;
+		} else {
+			bloodsX = 196;
 		}
 		
+		ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
+		ctx.drawImage(element, bloodsX, bloodsY, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
 	  ctx.restore();
 	}
 	
 	this.update = function(keyState) {
-		
-		if (keyState[letterA]) {
-				that.x -= that.initialVelocity * that.velX;
+		//using hasOwnProperty caused diagonal movement failure
+		//keyState.hasOwnProperty('LETTER_A')
+		if (keyState[LETTER_A]) {
+			that.x -= that.initialVelocity * that.velX;
 		}
 
-		if (keyState[letterD]) {
+		if (keyState[LETTER_D]) {
 			that.x += that.initialVelocity * that.velX;
 		}
 
-		if (keyState[letterW]) {
+		if (keyState[LETTER_W]) {
 			that.y -= that.initialVelocity * that.velY;
 		}
 
-		if (keyState[letterS]) {
+		if (keyState[LETTER_S]) {
 			that.y += that.initialVelocity * that.velY;
 		}
 
