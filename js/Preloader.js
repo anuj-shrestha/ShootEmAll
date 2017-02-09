@@ -1,4 +1,4 @@
-// loads all necessary images
+// loads all necessary images before hand, before starting game
 function Preloader() {
 
 	var view = View.getInstance();	

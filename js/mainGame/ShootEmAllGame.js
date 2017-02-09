@@ -810,40 +810,37 @@ function ShootEmAllGame() {
 
 	that.generateEnemies = function(firstTime) {
 
+		maxEnemies += 20;
 
-		
-		
-			maxEnemies += 20;
+		for (var i = 0; i < maxEnemies; i++) {
 
-			for (var i = 0; i < maxEnemies; i++) {
-
-				this.enemy = new Enemy();
-				this.enemy.initialVelocity = maxEnemies * 0.02 * firstTime;
-				this.enemy.width = Utils.getRandom(80, 96);
-				this.enemy.height = this.enemy.width; 
-		
-				if (enemyBoss == undefined){
-					enemyBossCount++;
-					enemyBoss = this.enemy;
-					this.enemy.initialVelocity = maxEnemies * 0.05;
-					this.enemy.health = 2000 * enemyBossCount;
-					this.enemy.boss = true;
-					this.enemy.width = 96 + enemyBossCount * 48;
-					this.enemy.height = this.enemy.width;
-				}
-				
-				this.enemy.x = Utils.getRandom(-2000, 4000);
-				this.enemy.y = Utils.getRandom(-1000, 2000);
-
-				if (Math.abs(this.enemy.x - this.player.x) < 500 && Math.abs(this.enemy.y - this.player.y) < 500) {
-					this.enemy.x += 1000;
-					this.enemy.y += 1000;
-				}
-				
-				this.enemy.index = enemyIndex;
-				enemies[enemyIndex] = this.enemy;
-				enemyIndex++;
+			this.enemy = new Enemy();
+			this.enemy.initialVelocity = maxEnemies * 0.02 * firstTime;
+			this.enemy.width = Utils.getRandom(80, 96);
+			this.enemy.height = this.enemy.width; 
+	
+			if (enemyBoss == undefined){
+				enemyBossCount++;
+				enemyBoss = this.enemy;
+				this.enemy.initialVelocity = maxEnemies * 0.05;
+				this.enemy.health = 2000 * enemyBossCount;
+				this.enemy.boss = true;
+				this.enemy.width = 96 + enemyBossCount * 48;
+				this.enemy.height = this.enemy.width;
 			}
+			
+			this.enemy.x = Utils.getRandom(-2000, 4000);
+			this.enemy.y = Utils.getRandom(-1000, 2000);
+
+			if (Math.abs(this.enemy.x - this.player.x) < 500 && Math.abs(this.enemy.y - this.player.y) < 500) {
+				this.enemy.x += 1000;
+				this.enemy.y += 1000;
+			}
+			
+			this.enemy.index = enemyIndex;
+			enemies[enemyIndex] = this.enemy;
+			enemyIndex++;
+		}
 	}
 
 	that.missionCompleteCase = function() {
