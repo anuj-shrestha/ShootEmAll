@@ -10,12 +10,12 @@ function Background() {
 
 	this.x;
 	this.y;
-	
+
 	var letterA = 65;
 	var letterD = 68;
 	var letterW = 87;
 	var letterS = 83;
-	
+
 	this.width = 2000;
 	this.height = 1250;
 
@@ -24,7 +24,7 @@ function Background() {
 	this.sWidth = 2000;
 	this.sHeight = 1250;
 	this.frame = 0;
-	
+
 	this.centerX = this.width / 2;
 	this.centerY = this.height / 2;
 
@@ -32,8 +32,10 @@ function Background() {
 	this.y = -this.centerY;
 	this.increment = 3;
 
-
 	var that = this;
+
+	this.distanceX = 0;
+	this.distanceY = 0;
 
 	this.setDimension = function(width, height) {
 		that.width = width;
@@ -41,8 +43,16 @@ function Background() {
 	}
 
 	this.draw = function() {
-		
+
+		// To make a repeating background
+		// var ptrn = ctx.createPattern(element, 'repeat'); // Create a pattern with this image, and set it to "repeat".
+    // ctx.fillStyle = ptrn;
+    // ctx.fillRect(0, 0, that.width, that.height); // context.fillRect(x, y, width, height);
+    
+		ctx.save();
+		ctx.translate(that.width * that.distanceX, that.height * that.distanceY);
 		ctx.drawImage(element, that.sX, that.sY, that.width, that.sHeight, that.x, that.y, that.width, that.height);
+		ctx.restore();
 		if (that.x < -500) {
 			drawNewBg(that.width, 0);
 			drawNewBg(that.width, that.height);
@@ -64,12 +74,15 @@ function Background() {
 		}
 
 		function drawNewBg(newX, newY) {
+			ctx.save();
+			ctx.translate(that.width * that.distanceX, that.height * that.distanceY);
 			ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sHeight, that.x + newX, that.y + newY, that.width, that.height);
+			ctx.restore();
 		}
 	}
-	
+
 	this.update = function(keyState) {
-		
+
 		if (keyState[letterA]){
 			that.x += that.increment;
 		}
@@ -92,5 +105,8 @@ function Background() {
 
 		that.centerX = that.x + that.width / 2;
 		that.centerY = that.y + that.height / 2;
+
+		that.distanceX = - parseInt(that.x / that.width);
+		that.distanceY = - parseInt(that.y / that.height);
 	}
 }
