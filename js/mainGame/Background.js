@@ -48,7 +48,7 @@ function Background() {
 		// var ptrn = ctx.createPattern(element, 'repeat'); // Create a pattern with this image, and set it to "repeat".
     // ctx.fillStyle = ptrn;
     // ctx.fillRect(0, 0, that.width, that.height); // context.fillRect(x, y, width, height);
-    
+
 		ctx.save();
 		ctx.translate(that.width * that.distanceX, that.height * that.distanceY);
 		ctx.drawImage(element, that.sX, that.sY, that.width, that.sHeight, that.x, that.y, that.width, that.height);
