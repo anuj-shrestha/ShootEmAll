@@ -20,7 +20,7 @@ function Player() {
 	this.centerX = this.x + this.width / 2;
 	this.centerY = this.y + this.height / 2;
 	this.playerRotation;
-	
+
 	this.name;
 	this.state;
 	this.health = 200;
@@ -38,27 +38,27 @@ function Player() {
 
 	var that = this;
 
-	this.setPosition = function(x, y) {
+	this.setPosition = function (x, y) {
 		that.x = x;
 		that.y = y;
 	}
 
-	this.keyPressed = function(keyState) {
-	
-    if (keyState.hasOwnProperty(LETTER_W) || keyState.hasOwnProperty(LETTER_S) || 
-    	keyState.hasOwnProperty(LETTER_A) || keyState.hasOwnProperty(LETTER_D)) {
-    	return true;
-    }
-     
-    return false;
+	this.keyPressed = function (keyState) {
+
+		if (keyState.hasOwnProperty(LETTER_W) || keyState.hasOwnProperty(LETTER_S) ||
+			keyState.hasOwnProperty(LETTER_A) || keyState.hasOwnProperty(LETTER_D)) {
+			return true;
+		}
+
+		return false;
 	}
 
-	this.setDimension = function(width, height) {
+	this.setDimension = function (width, height) {
 		that.width = width;
 		that.height = height;
 	}
 
-	this.draw = function(rotation, keyState) {
+	this.draw = function (rotation, keyState) {
 		var bloodsX = 0;
 		var bloodsY = 384;
 
@@ -75,14 +75,14 @@ function Player() {
 				that.sY = 4;
 			}
 		}
-		
+
 
 		that.sX = (that.sWidth + 14) * that.frame + 7;
 
 		ctx.save();
-	  ctx.translate(that.x + that.width/2, that.y + that.height/2);
-	  ctx.rotate(rotation);
-		
+		ctx.translate(that.x + that.width / 2, that.y + that.height / 2);
+		ctx.rotate(rotation);
+
 		if (that.health < 190 && that.health > 70) {
 			bloodsX = 0;
 		} else if (that.health <= 70 && that.health > 50) {
@@ -94,13 +94,15 @@ function Player() {
 		} else {
 			bloodsX = 196;
 		}
-		
-		ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-		ctx.drawImage(element, bloodsX, bloodsY, that.sWidth, that.sHeight, that.width/2 * -1, that.height/2 * -1, that.width, that.height);
-	  ctx.restore();
+
+		ctx.drawImage(element, that.sX, that.sY, that.sWidth, that.sHeight, that.width / 2 * -1, that.height / 2 * -1, that.width, that.height);
+		ctx.drawImage(element, bloodsX, bloodsY, that.sWidth, that.sHeight, that.width / 2 * -1, that.height / 2 * -1, that.width, that.height);
+		ctx.restore();
+
+		socket.emit('chat message', that.x);
 	}
-	
-	this.update = function(keyState) {
+
+	this.update = function (keyState) {
 		//using hasOwnProperty caused diagonal movement failure
 		//keyState.hasOwnProperty('LETTER_A')
 		if (keyState[LETTER_A]) {
