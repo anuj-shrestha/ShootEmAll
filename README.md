@@ -1,6 +1,6 @@
 # Shoot-Em-All
 
-TRY IT HERE: [Shoot-Em-ALl](anuj-shrestha.github.io/ShootEmAll/)
+GAME LINK!!! [Shoot-Em-All](anuj-shrestha.github.io/ShootEmAll/)
 
 Shoot-Em-All is the point and shoot game. You survive attacking the aliens. Get health kit and gun kit appearing randomly in the map.
 
